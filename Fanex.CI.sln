@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.MSBuild", "Fanex.MsBuild\Fanex.MSBuild.csproj", "{6BD834D1-3B81-4CE2-B7C6-B04276CBB74B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.Atomiq", "Fanex.Atomiq\Fanex.Atomiq.csproj", "{E6B2B8EE-745D-4E22-886D-CE2D2CC234D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.FxCop", "Fanex.FxCop\Fanex.FxCop.csproj", "{7D572637-1002-43C0-93C0-71A77F803B56}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6BD834D1-3B81-4CE2-B7C6-B04276CBB74B}.Debug|x86.ActiveCfg = Debug|x86
+		{6BD834D1-3B81-4CE2-B7C6-B04276CBB74B}.Debug|x86.Build.0 = Debug|x86
+		{6BD834D1-3B81-4CE2-B7C6-B04276CBB74B}.Release|x86.ActiveCfg = Release|x86
+		{6BD834D1-3B81-4CE2-B7C6-B04276CBB74B}.Release|x86.Build.0 = Release|x86
+		{E6B2B8EE-745D-4E22-886D-CE2D2CC234D2}.Debug|x86.ActiveCfg = Debug|x86
+		{E6B2B8EE-745D-4E22-886D-CE2D2CC234D2}.Debug|x86.Build.0 = Debug|x86
+		{E6B2B8EE-745D-4E22-886D-CE2D2CC234D2}.Release|x86.ActiveCfg = Release|x86
+		{E6B2B8EE-745D-4E22-886D-CE2D2CC234D2}.Release|x86.Build.0 = Release|x86
+		{7D572637-1002-43C0-93C0-71A77F803B56}.Debug|x86.ActiveCfg = Debug|x86
+		{7D572637-1002-43C0-93C0-71A77F803B56}.Debug|x86.Build.0 = Debug|x86
+		{7D572637-1002-43C0-93C0-71A77F803B56}.Release|x86.ActiveCfg = Release|x86
+		{7D572637-1002-43C0-93C0-71A77F803B56}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

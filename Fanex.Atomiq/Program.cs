@@ -47,22 +47,61 @@ namespace Fanex.Atomiq
             return Environment.GetEnvironmentVariable("GIT_BRANCH");
         }
 
+        private static string ReplaceSection(string start, string end, string content, string section)
+        {
+            int from = content.IndexOf(start);
+
+            if (from < 0) return content;
+
+            int to = content.IndexOf(end, from);
+
+            if (to < 0) return content;
+
+            string oldSection = content.Substring(from, to - from);
+
+            string newContent = content.Replace(oldSection, section);
+            return newContent;
+        }
+
         private static string InjectAtomiqDownload(string content)
         {
             string start = "<h3>Project Options</h3>";
             string end = "<h3>Build Constraints</h3>";
 
-            string header = "<h3>Build ID - " + GetCurrentDateTime() + "</h3>" +
-                "<h3>Branch - " + GetBranchName() + "</h3>";
-            string newSection = header + "For more visualization please download <a href=\"http://ci.nexcel.vn/userContent/Atomiq_1.1.3.94.exe\">Atomiq_1.1.3.94</a> or <a href=\"http://getatomiq.com/\">http://getatomiq.com/</a>";
+            string newSection = "For more visualization please download <a href=\"http://ci.nexcel.vn/userContent/Atomiq_1.1.3.94.exe\">Atomiq_1.1.3.94</a> or <a href=\"http://getatomiq.com/\">http://getatomiq.com/</a>";
 
-            int from = content.IndexOf(start);
-            int to = content.IndexOf(end, from);
+            return ReplaceSection(start, end, content, newSection);
+        }
 
-            string oldSection = content.Substring(from, to - from);
+        private static string ReplaceHeaderImg(string content)
+        {            
+            string start = "<img style=\"margin: 23px 0px 0px 30px; padding: 0px;\"";
+            string end = "</div>";
 
-            string newContent = content.Replace(oldSection, newSection);
-            return newContent;
+            string newHeader = "<h2 style=\"color: #eee; padding: 4px\"> Atomiq build - " + GetCurrentDateTime() + " - " + GetBranchName() + "</h2>";
+
+            /*
+
+            #header {
+            background: #33C4EB url(http://www.getatomiq.com/App_Themes/Atomiq/images/banner.png) repeat-y scroll 0px 0px;
+            height: 120px;
+            text-align: left;
+            width: 100%;
+            }
+            */
+
+            content = ReplaceSection(start, end, content, newHeader);
+
+            start = "#header";
+            end = "}";
+            string newSection = @"#header {
+            background: #33C4EB;
+            height: 60px;
+            text-align: left;
+            width: 100%;
+            }";
+
+            return ReplaceSection(start, end, content, newSection);
         }
 
         private static int Main(string[] args)
@@ -92,6 +131,7 @@ namespace Fanex.Atomiq
                             // Copy default file
                             StreamWriter writer = File.CreateText(file);
                             string text = File.ReadAllText(options.RootDirectory + ReportName + ".htm");
+                            text = ReplaceHeaderImg(text);
                             writer.BaseStream.Seek(0, SeekOrigin.Begin);
                             writer.Write(text);
                             writer.Close();
@@ -100,6 +140,7 @@ namespace Fanex.Atomiq
                         {
                             string text = File.ReadAllText(file);
                             text = InjectAtomiqDownload(text);
+                            text = ReplaceHeaderImg(text);
                             StreamWriter writer = File.CreateText(file);
                             writer.BaseStream.Seek(0, SeekOrigin.Begin);
                             writer.Write(text);

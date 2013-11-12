@@ -23,7 +23,12 @@ namespace Fanex.MsBuild
 
         public static string GetCurrentDateTime()
         {
-            return DateTime.Now.ToString();
+            return Environment.GetEnvironmentVariable("BUILD_ID");
+        }
+
+        public static string GetBranchName()
+        {
+            return Environment.GetEnvironmentVariable("GIT_BRANCH");
         }
 
         public static string GetSolutionName(string path)

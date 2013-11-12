@@ -91,12 +91,11 @@ namespace Fanex.MsBuild
 
                     // Remove root directory C:\Program Files\Jenkins\workspace\
                     output = Replace(output, Options.RootDirectory, string.Empty);
-                    
-                    // Latest report
-                    File.WriteAllText(Options.RootDirectory + Options.Name + "\\" + ReportName + ".htm", output, Encoding.UTF8);
 
-                    // Build id report
-                    File.WriteAllText(ConfigurationManager.AppSettings["OutputDirectory"] + Options.Name + "-" + Options.BuildId + ".htm", output, Encoding.UTF8);
+                    string outputDir = Options.RootDirectory + Options.Name + "\\cireport\\";
+
+                    // Latest report
+                    File.WriteAllText(outputDir + ReportName + ".htm", output, Encoding.UTF8);
 
                     int error = 0;
                     int.TryParse(Environment.GetEnvironmentVariable("ERRORLEVEL", EnvironmentVariableTarget.Process), out error);

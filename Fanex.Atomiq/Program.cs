@@ -37,12 +37,24 @@ namespace Fanex.Atomiq
             return result;
         }
 
+        public static string GetCurrentDateTime()
+        {
+            return Environment.GetEnvironmentVariable("BUILD_ID");
+        }
+
+        public static string GetBranchName()
+        {
+            return Environment.GetEnvironmentVariable("GIT_BRANCH");
+        }
+
         private static string InjectAtomiqDownload(string content)
         {
             string start = "<h3>Project Options</h3>";
             string end = "<h3>Build Constraints</h3>";
 
-            string newSection = "For more visualization please download <a href=\"http://ci.nexcel.vn/userContent/Atomiq_1.1.3.94.exe\">Atomiq_1.1.3.94</a> or <a href=\"http://getatomiq.com/\">http://getatomiq.com/</a>";
+            string header = "<h3>Build ID - " + GetCurrentDateTime() + "</h3>" +
+                "<h3>Branch - " + GetBranchName() + "</h3>";
+            string newSection = header + "For more visualization please download <a href=\"http://ci.nexcel.vn/userContent/Atomiq_1.1.3.94.exe\">Atomiq_1.1.3.94</a> or <a href=\"http://getatomiq.com/\">http://getatomiq.com/</a>";
 
             int from = content.IndexOf(start);
             int to = content.IndexOf(end, from);
@@ -69,8 +81,10 @@ namespace Fanex.Atomiq
                         bool.TryParse(options.DuplicateAsError, out duplicateAsError);
                     }
 
+                    string outputDir = options.RootDirectory + options.Name + "\\cireport\\";
+
                     // Check exist
-                    string file = options.RootDirectory + options.Name + "\\" + ReportName + ".htm";
+                    string file = outputDir + ReportName + ".htm";
                     if (File.Exists(file))
                     {
                         if (File.ReadAllText(file).StartsWith("System.InvalidOperationException: Sequence contains no elements"))

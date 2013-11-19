@@ -19,6 +19,16 @@ namespace Fanex.Atomiq
     {
         private const string ReportName = "DRY.REPORT";
 
+        public static string GetCurrentDateTime()
+        {
+            return Environment.GetEnvironmentVariable("BUILD_ID");
+        }
+
+        public static string GetBranchName()
+        {
+            return Environment.GetEnvironmentVariable("GIT_BRANCH");
+        }
+
         private static string CorrectDirectoryPath(string path)
         {
             string result = path;
@@ -37,25 +47,21 @@ namespace Fanex.Atomiq
             return result;
         }
 
-        public static string GetCurrentDateTime()
-        {
-            return Environment.GetEnvironmentVariable("BUILD_ID");
-        }
-
-        public static string GetBranchName()
-        {
-            return Environment.GetEnvironmentVariable("GIT_BRANCH");
-        }
-
         private static string ReplaceSection(string start, string end, string content, string section)
         {
             int from = content.IndexOf(start);
 
-            if (from < 0) return content;
+            if (from < 0)
+            {
+                return content;
+            }
 
             int to = content.IndexOf(end, from);
 
-            if (to < 0) return content;
+            if (to < 0)
+            {
+                return content;
+            }
 
             string oldSection = content.Substring(from, to - from);
 

@@ -7,33 +7,70 @@
 namespace Fanex.MsDeploy
 {
     using System;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using CommandLine;
     using CommandLine.Text;
 
     public class Program
     {
+        private const string _configPy = "/_AutomationTest/config.py";
+        private const string _runTest = "/_AutomationTest/run.bat";
+
         private static int Main(string[] args)
         {
             var options = new Options();
 
             if (CommandLine.Parser.Default.ParseArguments(args, options))
             {
+                // Set up website
                 try
                 {
-                    IConfigureAppPoolIIS7 config = new MWA();
+                    IConfigureAppPoolIIS7 config = new ADSI();
                     config.ConfigureAppPoolIIS7(options);
-                    return 0;
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                     return -1;
                 }
+
+                // Config test url to /_AutomationTest/config.py -> Url=
+                RunTest(options.Application);
+
+                return 0;
             }
             else
             {
                 return -1;
+            }
+        }
+
+        private static void RunTest(string application)
+        {
+            string workspace = Environment.GetEnvironmentVariable("WORKSPACE");
+            string testbase = Environment.GetEnvironmentVariable("CI_PUBLISH_URL");
+
+            string file = workspace + _configPy;
+
+            if (File.Exists(file))
+            {
+                string newConfig = string.Empty;
+                string[] configs = File.ReadAllLines(file);
+                foreach (string line in configs)
+                {
+                    if (line.StartsWith("Url=") || line.StartsWith("Url ="))
+                    {
+                        newConfig += "Url='" + testbase + application + "'\r\n";
+                    }
+                    else
+                    {
+                        newConfig += line + "\r\n";
+                    }
+                }
+
+                File.WriteAllText(file, newConfig);
             }
         }
     }
@@ -48,7 +85,7 @@ namespace Fanex.MsDeploy
             set;
         }
 
-        [Option("root", Required = true, HelpText = "Root website.")]
+        [Option("root", Required = true, HelpText = "Root website or site id.")]
         public string RootWebsite
         {
             get;

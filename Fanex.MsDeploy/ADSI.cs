@@ -7,6 +7,8 @@
 namespace Fanex.MsDeploy
 {
     using System;
+    using System.Collections.Generic;
+    using System.DirectoryServices;
 
     /// <summary>
     /// Active Directory Service Interfaces.
@@ -16,9 +18,62 @@ namespace Fanex.MsDeploy
         public void ConfigureAppPoolIIS7(Options options)
         {
             // Create appPool if it does not exist
+            string metabasePath = "IIS://" + options.Host + "/W3SVC/AppPools";
+            DirectoryEntry newpool = new DirectoryEntry(metabasePath + "/" + options.Pool);
+            DirectoryEntry apppools = new DirectoryEntry(metabasePath);
 
+            string pool = null;
+            try 
+            {
+                pool = newpool.Name;
+            }
+            catch
+            {
+                pool = null;
+            }
+
+            if (pool == null)
+            {
+                newpool = apppools.Children.Add(options.Pool, "IIsApplicationPool");
+                this.SetBinaryProperty(newpool, "ManagedPipelineMode", "Integrated");
+                newpool.CommitChanges();
+                Console.WriteLine("Create application pool " + options.Pool);
+            }
 
             // Set app pool to target application name
+            metabasePath = "IIS://" + options.Host + "/W3SVC/" + options.RootWebsite + "/Root/" + options.Application;
+            DirectoryEntry dir = new DirectoryEntry(metabasePath);
+            string className = dir.SchemaClassName.ToString();
+            if (className.EndsWith("VirtualDir"))
+            {
+                object[] param = { 0, options.Pool, true };
+                dir.Invoke("AppCreate3", param);
+                dir.Properties["AppIsolated"][0] = "2";
+                Console.WriteLine("Assign application pool " + options.Pool + " to " + options.Application);
+            }
+        }
+
+        private void SetBinaryProperty(DirectoryEntry entry, string propertyName, string newValue)
+        {
+            try
+            {
+                DirectoryEntry path = entry;
+                PropertyValueCollection propValues = path.Properties[propertyName];
+                object oldObj = propValues.Value;
+
+                newValue = newValue.Trim();
+                string[] newValueSplit = newValue.Split(new char[] { ',' });
+                object[] newObj = new object[newValueSplit.Length];
+                newValueSplit.CopyTo(newObj, 0);
+
+                propValues.Clear();
+                propValues.Add(newObj);
+                path.CommitChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed in SetBinaryProperty with the following exception: \n{0}", ex.Message);
+            }
         }
     }
 }

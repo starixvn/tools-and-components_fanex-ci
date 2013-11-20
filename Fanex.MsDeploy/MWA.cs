@@ -6,6 +6,7 @@
 
 namespace Fanex.MsDeploy
 {
+    using System;
     using System.Linq;
     using Microsoft.Web.Administration;
 
@@ -24,6 +25,8 @@ namespace Fanex.MsDeploy
                 app.ManagedRuntimeVersion = "v4.0";
                 app.ProcessModel.IdentityType = ProcessModelIdentityType.ApplicationPoolIdentity;
 
+                Console.WriteLine("Create application pool " + options.Pool);
+
                 mgr.CommitChanges();
             }
 
@@ -38,6 +41,7 @@ namespace Fanex.MsDeploy
                         {
                             if (webApplication.ApplicationPoolName != options.Pool)
                             {
+                                Console.WriteLine("Assign application pool " + options.Pool + " to " + options.Application);
                                 webApplication.ApplicationPoolName = options.Pool;
                                 mgr.CommitChanges();
                             }

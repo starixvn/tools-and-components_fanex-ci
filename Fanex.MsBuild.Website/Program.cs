@@ -1,0 +1,133 @@
+﻿// -----------------------------------------------------------------------
+// <copyright file="Program.cs" company="Nexcel Solutions">
+// Qui@20131119.
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace Fanex.MsBuild.Website
+{
+    using System.Diagnostics.CodeAnalysis;
+    using CommandLine;
+    using CommandLine.Text;
+    using Microsoft.Build;
+    using System.Collections;
+    using System;
+    using System.Diagnostics;
+    using System.Configuration;
+    using System.IO;
+
+    /// <summary>
+    /// This program find all dependencies from output binaries and copy to \Bin\ folder.
+    /// </summary>
+    public class Program
+    {
+        private static int Main(string[] args)
+        {
+            var options = new Options();
+
+            if (CommandLine.Parser.Default.ParseArguments(args, options))
+            {
+                try
+                {
+
+                    Solution solution = new Solution(options.Solution);
+                    ArrayList projectReferences = null;
+                    string workspace = string.IsNullOrEmpty(options.Root) ? Environment.GetEnvironmentVariable("WORKSPACE") : options.Root;
+                    SolutionProject website = null;
+
+                    foreach (SolutionProject project in solution.Projects)
+                    {
+                        if (project.ProjectName == options.Website)
+                        {
+                            projectReferences = project.ProjectReferences;
+                            website = project;
+                        }
+                    }
+
+                    // Copy assemblies
+                    foreach (SolutionProject project in solution.Projects)
+                    {
+                        if (projectReferences.Contains(project.ProjectGuid))
+                        {
+                            CopyBinaries(workspace + "\\" + project.RelativePath, workspace + "\\" + website.RelativePath + "Bin");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return -1;
+                }
+
+                return 0;
+            }
+
+            return -1;
+        }
+
+        private static void CopyBinaries(string projectPath, string targetPath)
+        {
+            try
+            {
+                string outputPath = string.Empty;
+                string projectDir = projectPath.Substring(0, projectPath.LastIndexOf("\\")) + "\\bin\\";
+
+                string[] filePaths = Directory.GetFiles(projectDir, "*.dll", SearchOption.AllDirectories);
+                if (!Directory.Exists(targetPath))
+                {
+                    Directory.CreateDirectory(targetPath);
+                }
+
+                foreach (string filePath in filePaths)
+                {
+                    string file = filePath.Substring(filePath.LastIndexOf("\\") + 1);
+                    File.Copy(filePath, targetPath + "\\" + file, true);
+                }
+
+                Console.WriteLine("Copied binaries from " + projectPath);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+    }
+
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    public class Options
+    {
+        [Option("solution", Required = true, HelpText = "Solution that contains website need to build.")]
+        public string Solution
+        {
+            get;
+            set;
+        }
+
+        [Option("website", Required = true, HelpText = "Website need to build.")]
+        public string Website
+        {
+            get;
+            set;
+        }
+
+        [Option("refs", HelpText = "Path of reference assemblies which were seperated by semi-colons.")]
+        public string References
+        {
+            get;
+            set;
+        }
+
+        [Option("root", HelpText = "Root path of solution.")]
+        public string Root
+        {
+            get;
+            set;
+        }
+
+        [HelpOption]
+        public string GetUsage()
+        {
+            return HelpText.AutoBuild(this, (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
+        }
+    }
+}

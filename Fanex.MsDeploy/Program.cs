@@ -13,6 +13,9 @@ namespace Fanex.MsDeploy
     using CommandLine;
     using CommandLine.Text;
 
+    /// <summary>
+    /// This program will config application pool for remote website and config automation test variables.
+    /// </summary>
     public class Program
     {
         private const string _configPy = "/_AutomationTest/config.py";
@@ -37,7 +40,7 @@ namespace Fanex.MsDeploy
                 }
 
                 // Config test url to /_AutomationTest/config.py -> Url=
-                RunTest(options.Application);
+                ConfigAutomationTest(options.Application);
 
                 return 0;
             }
@@ -47,7 +50,7 @@ namespace Fanex.MsDeploy
             }
         }
 
-        private static void RunTest(string application)
+        private static void ConfigAutomationTest(string application)
         {
             string workspace = Environment.GetEnvironmentVariable("WORKSPACE");
             string testbase = Environment.GetEnvironmentVariable("CI_PUBLISH_URL");

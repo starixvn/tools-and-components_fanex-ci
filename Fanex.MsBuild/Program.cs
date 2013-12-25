@@ -81,7 +81,7 @@ namespace Fanex.MsBuild
         /// <summary>
         /// Program entry point.
         /// </summary>
-        /// <param name="args">Input argument.s</param>
+        /// <param name="args">Input arguments.</param>
         /// <returns>Return error code.</returns>
         private static int Main(string[] args)
         {

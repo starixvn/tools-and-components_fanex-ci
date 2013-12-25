@@ -29,6 +29,11 @@ namespace Fanex.Atomiq
             return Environment.GetEnvironmentVariable("GIT_BRANCH");
         }
 
+        /// <summary>
+        /// Resolve last / character.
+        /// </summary>
+        /// <param name="path">Directory path.</param>
+        /// <returns>Return corrected path.</returns>
         private static string CorrectDirectoryPath(string path)
         {
             string result = path;
@@ -47,6 +52,14 @@ namespace Fanex.Atomiq
             return result;
         }
 
+        /// <summary>
+        /// Replace content from output report.
+        /// </summary>
+        /// <param name="start">Start string.</param>
+        /// <param name="end">End string.</param>
+        /// <param name="content">Input content.</param>
+        /// <param name="section">Inject content.</param>
+        /// <returns>Return replaced string.</returns>
         private static string ReplaceSection(string start, string end, string content, string section)
         {
             int from = content.IndexOf(start);
@@ -79,6 +92,11 @@ namespace Fanex.Atomiq
             return ReplaceSection(start, end, content, newSection);
         }
 
+        /// <summary>
+        /// Remove header image from output report.
+        /// </summary>
+        /// <param name="content">Input content.</param>
+        /// <returns>Return replaced string.</returns>
         private static string ReplaceHeaderImg(string content)
         {            
             string start = "<img style=\"margin: 23px 0px 0px 30px; padding: 0px;\"";
@@ -110,6 +128,11 @@ namespace Fanex.Atomiq
             return ReplaceSection(start, end, content, newSection);
         }
 
+        /// <summary>
+        /// Entry point.
+        /// </summary>
+        /// <param name="args">Arguments input.</param>
+        /// <returns>Return error code.</returns>
         private static int Main(string[] args)
         {
             var options = new Options();
@@ -167,6 +190,9 @@ namespace Fanex.Atomiq
         }
     }
 
+    /// <summary>
+    /// Command line option.
+    /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class Options
     {

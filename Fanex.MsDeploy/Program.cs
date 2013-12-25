@@ -18,8 +18,8 @@ namespace Fanex.MsDeploy
     /// </summary>
     public class Program
     {
-        private const string _configPy = "/_AutomationTest/config.py";
-        private const string _runTest = "/_AutomationTest/run.bat";
+        private const string ConfigPy = "/_AutomationTest/config.py";
+        private const string RunTest = "/_AutomationTest/run.bat";
 
         private static int Main(string[] args)
         {
@@ -55,7 +55,7 @@ namespace Fanex.MsDeploy
             string workspace = Environment.GetEnvironmentVariable("WORKSPACE");
             string testbase = Environment.GetEnvironmentVariable("CI_PUBLISH_URL");
 
-            string file = workspace + _configPy;
+            string file = workspace + ConfigPy;
 
             if (File.Exists(file))
             {

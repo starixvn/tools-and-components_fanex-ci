@@ -6,15 +6,12 @@
 
 namespace Fanex.MsBuild.Website
 {
+    using System;
+    using System.Collections;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using CommandLine;
     using CommandLine.Text;
-    using Microsoft.Build;
-    using System.Collections;
-    using System;
-    using System.Diagnostics;
-    using System.Configuration;
-    using System.IO;
 
     /// <summary>
     /// This program find all dependencies from output binaries and copy to \Bin\ folder.
@@ -29,7 +26,6 @@ namespace Fanex.MsBuild.Website
             {
                 try
                 {
-
                     Solution solution = new Solution(options.Solution);
                     ArrayList projectReferences = null;
                     string workspace = string.IsNullOrEmpty(options.Root) ? Environment.GetEnvironmentVariable("WORKSPACE") : options.Root;

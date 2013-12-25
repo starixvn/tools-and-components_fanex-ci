@@ -78,6 +78,11 @@ namespace Fanex.MsBuild
             return result;
         }
 
+        /// <summary>
+        /// Program entry point.
+        /// </summary>
+        /// <param name="args">Input argument.s</param>
+        /// <returns>Return error code.</returns>
         private static int Main(string[] args)
         {
             Options = new Options();

@@ -26,6 +26,11 @@ namespace Fanex.FxCop
             private set;
         }
 
+        /// <summary>
+        /// Correct directory path.
+        /// </summary>
+        /// <param name="path">Input path.</param>
+        /// <returns>Return corrected path.</returns>
         private static string CorrectDirectoryPath(string path)
         {
             string result = path;

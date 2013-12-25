@@ -35,7 +35,6 @@ namespace Fanex.MsBuild
         {
             string result = string.Empty;
 
-            // Program.ReplaceInFile(xmlFile.Replace(".StyleCop.xml", ".StyleCop.violations.xml"), Program.Options.RootDirectory + Program.Options.Name + "\\", string.Empty);
             XmlTransformCore core = new XmlTransformCore(xmlFile, this.XslFile);
             result = core.Transform().Replace(OmitStyleCopString, string.Empty);
 

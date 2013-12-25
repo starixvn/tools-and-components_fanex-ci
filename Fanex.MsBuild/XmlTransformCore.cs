@@ -34,6 +34,10 @@ namespace Fanex.MsBuild
             private set;
         }
 
+        /// <summary>
+        /// Begin transform.
+        /// </summary>
+        /// <returns>Return transformed string.</returns>
         public string Transform()
         {
             XslCompiledTransform transform = new XslCompiledTransform();

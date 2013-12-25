@@ -38,6 +38,9 @@ namespace Fanex.MsBuild
             }
         }
 
+        /// <summary>
+        /// Flush email content and close.
+        /// </summary>
         public void Close()
         {
             string file = this._filePath + "MSBUILD.SUMMARY.email";

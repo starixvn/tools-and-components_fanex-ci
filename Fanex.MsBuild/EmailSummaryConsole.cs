@@ -10,12 +10,15 @@ namespace Fanex.MsBuild
     using System.IO;
     using System.Text;
 
+    /// <summary>
+    /// Write email output.
+    /// </summary>
     public class EmailSummaryConsole
     {
         // Fields
         private const string FileName = "MSBUILD.SUMMARY.email";
-        private string filePath = string.Empty;
-        private StringBuilder content = new StringBuilder();
+        private string _filePath = string.Empty;
+        private StringBuilder _content = new StringBuilder();
 
         // Methods
         public EmailSummaryConsole(string path)
@@ -27,21 +30,21 @@ namespace Fanex.MsBuild
 
             if (path.EndsWith(@"\"))
             {
-                this.filePath = path;
+                this._filePath = path;
             }
             else
             {
-                this.filePath = path + @"\";
+                this._filePath = path + @"\";
             }
         }
 
         public void Close()
         {
-            string file = this.filePath + "MSBUILD.SUMMARY.email";
+            string file = this._filePath + "MSBUILD.SUMMARY.email";
             try
             {
                 StreamWriter writer = File.CreateText(file);
-                writer.Write(this.content.ToString());
+                writer.Write(this._content.ToString());
                 writer.Close();
             }
             catch
@@ -52,12 +55,12 @@ namespace Fanex.MsBuild
 
         public void Write(string message)
         {
-            this.content.Append(message);
+            this._content.Append(message);
         }
 
         public void WriteLine(string message)
         {
-            this.content.AppendLine(message);
+            this._content.AppendLine(message);
         }
     }
 }

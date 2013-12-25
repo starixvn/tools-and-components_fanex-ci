@@ -13,7 +13,10 @@ namespace Fanex.MsBuild
     /// </summary>
     public class StyleCopXmlTransform : IXmlTransform
     {
-        private const string OmitStyleCopString = " xmlns:fn=\"http://www.w3.org/2005/xpath-functions\" xmlns:msdata=\"urn:schemas-microsoft-com:xml-msdata\" xmlns:msprop=\"urn:schemas-microsoft-com:xml-msprop\" xmlns:mstns=\"http://stylecopcmd.sourceforge.net/StyleCopReport.xsd\" xmlns:n1=\"urn:schemas-microsoft-com:xml-msdatasource\" xmlns:xdt=\"http://www.w3.org/2005/xpath-datatypes\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:altova=\"http://www.altova.com\"";
+        private const string OmitStyleCopString = " xmlns:fn=\"http://www.w3.org/2005/xpath-functions\" xmlns:msdata=\"urn:schemas-microsoft-com:xml-msdata\" " + 
+            "xmlns:msprop=\"urn:schemas-microsoft-com:xml-msprop\" xmlns:mstns=\"http://stylecopcmd.sourceforge.net/StyleCopReport.xsd\" " +
+            "xmlns:n1=\"urn:schemas-microsoft-com:xml-msdatasource\" xmlns:xdt=\"http://www.w3.org/2005/xpath-datatypes\" " +
+            "xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:altova=\"http://www.altova.com\"";
 
         public string XslFile
         {
@@ -23,6 +26,11 @@ namespace Fanex.MsBuild
             }
         }
 
+        /// <summary>
+        /// Transform xml file.
+        /// </summary>
+        /// <param name="xmlFile">Input file.</param>
+        /// <returns>Return transformed content.</returns>
         public string Transform(string xmlFile)
         {
             string result = string.Empty;

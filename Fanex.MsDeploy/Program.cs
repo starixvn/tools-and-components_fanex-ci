@@ -21,6 +21,11 @@ namespace Fanex.MsDeploy
         private const string ConfigPy = "/_AutomationTest/config.py";
         private const string RunTest = "/_AutomationTest/run.bat";
 
+        /// <summary>
+        /// Program entry point.
+        /// </summary>
+        /// <param name="args">Input arguments.</param>
+        /// <returns>Return error code.</returns>
         private static int Main(string[] args)
         {
             var options = new Options();
@@ -50,6 +55,10 @@ namespace Fanex.MsDeploy
             }
         }
 
+        /// <summary>
+        /// Config automation test.
+        /// </summary>
+        /// <param name="application">Application name.</param>
         private static void ConfigAutomationTest(string application)
         {
             string workspace = Environment.GetEnvironmentVariable("WORKSPACE");
@@ -78,6 +87,9 @@ namespace Fanex.MsDeploy
         }
     }
 
+    /// <summary>
+    /// Command line option.
+    /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class Options
     {

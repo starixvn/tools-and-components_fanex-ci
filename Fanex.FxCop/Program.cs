@@ -53,6 +53,11 @@ namespace Fanex.FxCop
             return name;
         }
 
+        /// <summary>
+        /// Correct directory path.
+        /// </summary>
+        /// <param name="path">Input path.</param>
+        /// <returns>Return corrected path.</returns>
         private static string GetDirectoryPath(string path)
         {
             int start = 0;
@@ -62,6 +67,12 @@ namespace Fanex.FxCop
             return name;
         }
 
+        /// <summary>
+        /// Program entry point.
+        /// </summary>
+        /// <param name="args">Input argument.</param>
+        /// <returns>Return error code.</returns>
+        [SuppressMessage("StyleCop.CSharp.Nexcel.NexcelCustomRules", "SP2101:MethodMustNotContainMoreLinesThan", Justification = "Reviewed.")]
         private static int Main(string[] args)
         {
             Options = new Options();
@@ -118,6 +129,11 @@ namespace Fanex.FxCop
             return 0;
         }
 
+        /// <summary>
+        /// Start run FX cop.
+        /// </summary>
+        /// <param name="assembly">Assembly path.</param>
+        /// <param name="output">Output report.</param>
         private static void RunFxCop(string assembly, string output)
         {
             string path = CorrectDirectoryPath(ConfigurationManager.AppSettings["FxCopPath"]);
@@ -159,6 +175,9 @@ namespace Fanex.FxCop
         }
     }
 
+    /// <summary>
+    /// Command line option.
+    /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class Options
     {

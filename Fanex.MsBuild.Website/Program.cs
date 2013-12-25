@@ -18,6 +18,11 @@ namespace Fanex.MsBuild.Website
     /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Program entry point.
+        /// </summary>
+        /// <param name="args">Input arguments.</param>
+        /// <returns>Return error code.</returns>
         private static int Main(string[] args)
         {
             var options = new Options();
@@ -61,6 +66,11 @@ namespace Fanex.MsBuild.Website
             return -1;
         }
 
+        /// <summary>
+        /// Copy binaries.
+        /// </summary>
+        /// <param name="projectPath">Project path.</param>
+        /// <param name="targetPath">Target path.</param>
         private static void CopyBinaries(string projectPath, string targetPath)
         {
             try
@@ -89,6 +99,9 @@ namespace Fanex.MsBuild.Website
         }
     }
 
+    /// <summary>
+    /// Command line option.
+    /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class Options
     {

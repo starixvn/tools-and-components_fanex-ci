@@ -15,6 +15,10 @@ namespace Fanex.MsDeploy
     /// </summary>
     public class ADSI : IConfigureAppPoolIIS7
     {
+        /// <summary>
+        /// Config application pool.
+        /// </summary>
+        /// <param name="options">Input option.</param>
         public void ConfigureAppPoolIIS7(Options options)
         {
             // Create appPool if it does not exist
@@ -53,6 +57,12 @@ namespace Fanex.MsDeploy
             }
         }
 
+        /// <summary>
+        /// Set properties.
+        /// </summary>
+        /// <param name="entry">Entry name.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="newValue">Property value.</param>
         private void SetBinaryProperty(DirectoryEntry entry, string propertyName, string newValue)
         {
             try

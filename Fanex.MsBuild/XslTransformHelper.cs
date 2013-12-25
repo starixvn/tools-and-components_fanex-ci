@@ -75,6 +75,11 @@ namespace Fanex.MsBuild
             return Guid.NewGuid().ToString();
         }
 
+        /// <summary>
+        /// Get style cop report.
+        /// </summary>
+        /// <param name="path">Input path.</param>
+        /// <returns>Return transformed style cop report.</returns>
         public string GetStyleCopReport(string path)
         {
             string reportPath = path.Replace(".csproj", ConfigurationManager.AppSettings["StyleCopOutPutFile"]);
@@ -88,6 +93,11 @@ namespace Fanex.MsBuild
             return styleCopTransform.Transform(reportPath);
         }
 
+        /// <summary>
+        /// Get FX cop report.
+        /// </summary>
+        /// <param name="path">Input path.</param>
+        /// <returns>Return transformed FX cop report.</returns>
         public string GetFxCopReport(string path)
         {
             string reportPath = path.Replace(".csproj", ConfigurationManager.AppSettings["FxCopOutPutFile"]);
@@ -134,6 +144,10 @@ namespace Fanex.MsBuild
             return string.Empty;
         }
 
+        /// <summary>
+        /// Prepare email content.
+        /// </summary>
+        /// <returns>Return email content.</returns>
         public string EmailConsoleSummary()
         {
             string message = "<TD>" + this.FormatColor(numberOfErrors, string.Empty) + "</TD>";

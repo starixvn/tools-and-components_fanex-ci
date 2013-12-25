@@ -87,7 +87,8 @@ namespace Fanex.Atomiq
             string start = "<h3>Project Options</h3>";
             string end = "<h3>Build Constraints</h3>";
 
-            string newSection = "For more visualization please download <a href=\"http://ci.nexcel.vn/userContent/Atomiq_1.1.3.94.exe\">Atomiq_1.1.3.94</a> or <a href=\"http://getatomiq.com/\">http://getatomiq.com/</a>";
+            string newSection = "For more visualization please download <a href=\"http://ci.nexcel.vn/userContent/Atomiq_1.1.3.94.exe\">" +
+                "Atomiq_1.1.3.94</a> or <a href=\"http://getatomiq.com/\">http://getatomiq.com/</a>";
 
             return ReplaceSection(start, end, content, newSection);
         }
@@ -133,6 +134,7 @@ namespace Fanex.Atomiq
         /// </summary>
         /// <param name="args">Arguments input.</param>
         /// <returns>Return error code.</returns>
+        [SuppressMessage("StyleCop.CSharp.Nexcel.NexcelCustomRules", "SP2101:MethodMustNotContainMoreLinesThan", Justification = "Reviewed.")]
         private static int Main(string[] args)
         {
             var options = new Options();

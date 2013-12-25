@@ -55,6 +55,11 @@ namespace Fanex.MsBuild
             writer.Close();
         }
 
+        /// <summary>
+        /// Correct directory path.
+        /// </summary>
+        /// <param name="path">Input path.</param>
+        /// <returns>Return corrected path.</returns>
         private static string CorrectDirectoryPath(string path)
         {
             string result = path;
@@ -126,6 +131,9 @@ namespace Fanex.MsBuild
         }
     }
 
+    /// <summary>
+    /// Command line option.
+    /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class Options
     {

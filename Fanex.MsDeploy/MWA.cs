@@ -10,8 +10,15 @@ namespace Fanex.MsDeploy
     using System.Linq;
     using Microsoft.Web.Administration;
 
+    /// <summary>
+    /// MWA implementation.
+    /// </summary>
     public class MWA : IConfigureAppPoolIIS7
     {
+        /// <summary>
+        /// Config application pool.
+        /// </summary>
+        /// <param name="options">Input option.</param>
         public void ConfigureAppPoolIIS7(Options options)
         {
             var mgr = ServerManager.OpenRemote(options.Host);

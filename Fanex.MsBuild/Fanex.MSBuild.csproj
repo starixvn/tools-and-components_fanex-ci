@@ -52,6 +52,7 @@
     <Compile Include="FxCopXmlTransform.cs" />
     <Compile Include="EmailSummaryConsole.cs" />
     <Compile Include="IXmlTransform.cs" />
+    <Compile Include="JsHintResultHandler.cs" />
     <Compile Include="MSBuildXmlTransform.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

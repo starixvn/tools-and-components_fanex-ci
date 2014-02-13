@@ -20,6 +20,7 @@ namespace Fanex.MsBuild
     public class Program
     {
         private const string ReportName = "MSBUILD.REPORT";
+        private const string JsHintReportName = "JSHINT.REPORT.htm";
 
         public static EmailSummaryConsole EmailConsole
         {
@@ -28,6 +29,12 @@ namespace Fanex.MsBuild
         }
 
         public static Options Options
+        {
+            get;
+            private set;
+        }
+
+        public static string OutputDir
         {
             get;
             private set;
@@ -87,7 +94,6 @@ namespace Fanex.MsBuild
         {
             Options = new Options();
             Environment.SetEnvironmentVariable("ERRORLEVEL", "0", EnvironmentVariableTarget.Process);
-
             try
             {
                 if (CommandLine.Parser.Default.ParseArguments(args, Options))
@@ -101,27 +107,20 @@ namespace Fanex.MsBuild
 
                     // Remove root directory C:\Program Files\Jenkins\workspace\
                     output = Replace(output, Options.RootDirectory, string.Empty);
+                    OutputDir = Options.RootDirectory + Options.Name + "\\cireport\\";
 
-                    string outputDir = Options.RootDirectory + Options.Name + "\\cireport\\";
+                    // Check JSHint Result
+                    if (Program.Options.JsHintAsError == "true")
+                    {
+                        JsHintResultHandler jscriptHintHandler = new JsHintResultHandler(Program.OutputDir + "\\" + JsHintReportName);
+                    }
 
                     // Latest report
-                    File.WriteAllText(outputDir + ReportName + ".htm", output, Encoding.UTF8);
-
-                    int error = 0;
-                    int.TryParse(Environment.GetEnvironmentVariable("ERRORLEVEL", EnvironmentVariableTarget.Process), out error);
-                    
-                    if (error > 0)
-                    {
-                        Console.WriteLine("FAILED.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("SUCCESS.");
-                    }
+                    File.WriteAllText(OutputDir + ReportName + ".htm", output, Encoding.UTF8);
 
                     EmailConsole.Close();
 
-                    return error;
+                    return ShowResult();
                 }
             }
             catch (Exception e)
@@ -133,6 +132,27 @@ namespace Fanex.MsBuild
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Show result information.
+        /// </summary>
+        /// <returns>Error Information.</returns>
+        private static int ShowResult()
+        {
+            int error = 0;
+            int.TryParse(Environment.GetEnvironmentVariable("ERRORLEVEL", EnvironmentVariableTarget.Process), out error);
+
+            if (error > 0)
+            {
+                Console.WriteLine("FAILED.");
+            }
+            else
+            {
+                Console.WriteLine("SUCCESS.");
+            }
+
+            return error;
         }
     }
 
@@ -179,6 +199,13 @@ namespace Fanex.MsBuild
 
         [Option("warningaserror", Required = false, HelpText = "Treat warning as error with MSBuild.")]
         public string WarningAsError
+        {
+            get;
+            set;
+        }
+
+        [Option("jshintaserror", Required = false, HelpText = "Treat jshint warning as error with MSBuild.")]
+        public string JsHintAsError
         {
             get;
             set;

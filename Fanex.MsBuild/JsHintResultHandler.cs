@@ -46,7 +46,7 @@ namespace Fanex.MsBuild
                     if (result > 0)
                     {
                         Environment.SetEnvironmentVariable("ERRORLEVEL", result.ToString(), EnvironmentVariableTarget.Process);
-                        Environment.SetEnvironmentVariable("JSHINT_BUILD_FAILED", result.ToString(), EnvironmentVariableTarget.Process);
+                        Environment.SetEnvironmentVariable("JSHINT_BUILD_FAILED_" + Program.Options.Name, result.ToString(), EnvironmentVariableTarget.User);
                     }
                 }
             }

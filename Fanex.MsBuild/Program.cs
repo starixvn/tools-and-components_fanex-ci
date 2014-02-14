@@ -96,7 +96,7 @@ namespace Fanex.MsBuild
             Environment.SetEnvironmentVariable("ERRORLEVEL", "0", EnvironmentVariableTarget.Process);
             
             // For Email JSHint report
-            Environment.SetEnvironmentVariable("JSHINT_BUILD_FAILED_" + Options.Name, "0", EnvironmentVariableTarget.User);
+            Environment.SetEnvironmentVariable("JSHINT_BUILD_FAILED_" + Options.Name + "_" + Options.BuildId, "0", EnvironmentVariableTarget.User);
             try
             {
                 if (CommandLine.Parser.Default.ParseArguments(args, Options))

@@ -57,11 +57,16 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StyleCopXmlTransform.cs" />
+    <Compile Include="SummaryDisplay\ProjectSummary.cs" />
+    <Compile Include="SummaryDisplay\ProjectSummaryList.cs" />
+    <Compile Include="SummaryDisplay\SummaryDisplayConsole.cs" />
     <Compile Include="XmlTransformCore.cs" />
     <Compile Include="XslTransformHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -10,6 +10,7 @@ namespace Fanex.MsBuild
     using System.Configuration;
     using System.IO;
     using System.Text.RegularExpressions;
+    using Fanex.MsBuild.SummaryDisplay;
 
     /// <summary>
     /// TODO: Update summary.
@@ -20,6 +21,7 @@ namespace Fanex.MsBuild
         private static int numberOfStyleCopViolations = 0;
         private static int numberOfWarnings = 0;
         private static int numberOfErrors = 0;
+        private static string projectName = string.Empty;
 
         public static string GetCurrentDateTime()
         {
@@ -113,10 +115,7 @@ namespace Fanex.MsBuild
 
         public string EmailConsoleProjectName(string path)
         {
-            Program.EmailConsole.WriteLine("<TR>");
-            Program.EmailConsole.WriteLine("<TD>");
-            Program.EmailConsole.WriteLine(this.GetProjectName(path));
-            Program.EmailConsole.WriteLine("</TD>");
+            projectName = this.GetProjectName(path);
             return string.Empty;
         }
 
@@ -150,7 +149,8 @@ namespace Fanex.MsBuild
         /// <returns>Return email content.</returns>
         public string EmailConsoleSummary()
         {
-            string message = "<TD>" + this.FormatColor(numberOfErrors, string.Empty) + "</TD>";
+            var message = "<TR><TD>" + projectName + "</TD>";
+            message += "<TD>" + this.FormatColor(numberOfErrors, string.Empty) + "</TD>";
             message += "<TD>" + this.FormatColor(numberOfWarnings, string.Empty) + "</TD>";
             message += "<TD>" + this.FormatColor(numberOfStyleCopViolations, string.Empty) + "</TD>";
             message += "<TD>" + this.FormatColor(numberOfFxCopViolations, string.Empty) + "</TD>";
@@ -158,8 +158,7 @@ namespace Fanex.MsBuild
             Program.EmailConsole.WriteLine(message);
             Program.EmailConsole.WriteLine("</TR>");
 
-            int exitCode = numberOfErrors;
-
+            var exitCode = numberOfErrors;
             if (Program.Options.StyleCopAsError != "false")
             {
                 exitCode += numberOfStyleCopViolations;
@@ -180,12 +179,22 @@ namespace Fanex.MsBuild
                 Environment.SetEnvironmentVariable("ERRORLEVEL", exitCode.ToString(), EnvironmentVariableTarget.Process);
             }
 
+            Program.EmailConsole.WriteLine("</TR>");
+
+            var projectSummary = new ProjectSummary
+            {
+                Name = projectName,
+                Error = numberOfErrors,
+                Warning = numberOfWarnings,
+                FxCop = numberOfFxCopViolations,
+                StyleCop = numberOfStyleCopViolations
+            };
+            Program.SummaryDisplayConsole.AddProjectSummary(projectSummary);
+
             numberOfErrors = 0;
             numberOfWarnings = 0;
             numberOfStyleCopViolations = 0;
             numberOfFxCopViolations = 0;
-
-            Program.EmailConsole.WriteLine("</TR>");
 
             return string.Empty;
         }

@@ -13,6 +13,7 @@ namespace Fanex.MsBuild
     using System.Text;
     using CommandLine;
     using CommandLine.Text;
+    using Fanex.MsBuild.SummaryDisplay;
 
     /// <summary>
     /// This program will generate html report for MSBuild and StyleCop.
@@ -23,6 +24,12 @@ namespace Fanex.MsBuild
         private const string JsHintReportName = "JSHINT.REPORT.htm";
 
         public static EmailSummaryConsole EmailConsole
+        {
+            get;
+            private set;
+        }
+
+        public static SummaryDisplayConsole SummaryDisplayConsole
         {
             get;
             private set;
@@ -102,6 +109,7 @@ namespace Fanex.MsBuild
                     Options.RootDirectory = CorrectDirectoryPath(Options.RootDirectory);
 
                     EmailConsole = new EmailSummaryConsole(Options.RootDirectory + Options.Name + "\\");
+                    SummaryDisplayConsole = new SummaryDisplayConsole();
 
                     MSBuildXmlTransform buildTransform = new MSBuildXmlTransform();
                     string output = buildTransform.Transform(Options.RootDirectory + Options.Name + "\\" + ConfigurationManager.AppSettings["MsBuildXml"]);
@@ -120,7 +128,7 @@ namespace Fanex.MsBuild
                     File.WriteAllText(OutputDir + ReportName + ".htm", output, Encoding.UTF8);
 
                     EmailConsole.Close();
-
+                    SummaryDisplayConsole.FlushXml(Options.RootDirectory + Options.Name + "\\");
                     return ShowResult();
                 }
             }

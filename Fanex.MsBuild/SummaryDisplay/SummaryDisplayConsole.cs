@@ -1,5 +1,6 @@
-﻿namespace Fanex.MsBuild.SummaryDisplay
+﻿namespace Fanex.MSBuild.SummaryDisplay
 {
+    using System;
     using System.Configuration;
     using System.IO;
     using System.Xml;
@@ -12,7 +13,7 @@
     public class SummaryDisplayConsole
     {
         // Fields
-        private const string FileName = "SUMMARY.DISPLAY.xml";
+        public const string FileName = "SUMMARY.DISPLAY.xml";
         private ProjectSummaryList _projectSummaryList = new ProjectSummaryList();
 
         public string XslFile
@@ -24,17 +25,37 @@
         }
 
         /// <summary>
+        /// Gets all project summaries by xml.
+        /// </summary>
+        /// <value>String xml.</value>
+        public string ProjectSumarryXml
+        {
+            get
+            {
+                var xmlSerializerNamespaces = new XmlSerializerNamespaces();
+                xmlSerializerNamespaces.Add(string.Empty, string.Empty);
+
+                var xmlSerializer = new XmlSerializer(typeof(ProjectSummaryList));
+
+                var stringWriter = new StringWriter();
+                var xmlWriter = XmlWriter.Create(stringWriter);
+                xmlSerializer.Serialize(xmlWriter, _projectSummaryList, xmlSerializerNamespaces);
+                return stringWriter.ToString();
+            }
+        }
+
+        /// <summary>
         /// Flush summary content and close.
         /// </summary>
        /// <param name="directory">Output directory.</param>
         public void FlushXml(string directory)
         {
-            directory = directory.EndsWith(@"\") ? directory : directory + @"\";
-            var file = directory + FileName;
+            directory = directory.EndsWith(@"\", StringComparison.CurrentCultureIgnoreCase) ? directory : directory + @"\";
+            var filePath = directory + FileName;
             try
             {
                 // Get xml
-                var xml = GetProjectSumarryXml();
+                var xml = ProjectSumarryXml;
 
                 // Xslt
                 var xslt = new XslCompiledTransform();
@@ -45,7 +66,7 @@
                 {
                     using (var xmlReader = XmlReader.Create(stringReader))
                     {
-                        using (var streamWriter = new StreamWriter(file, false))
+                        using (var streamWriter = new StreamWriter(filePath, false))
                         {
                             using (var xmlWriter = XmlWriter.Create(streamWriter, xslt.OutputSettings))
                             {
@@ -63,26 +84,20 @@
             }
         }
 
+        public void RemoveXml(string directory)
+        {
+            directory = directory.EndsWith(@"\", StringComparison.CurrentCultureIgnoreCase) ? directory : directory + @"\";
+            var filePath = directory + FileName;
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+
         public void AddProjectSummary(ProjectSummary projectSummary)
         {
             _projectSummaryList.Add(projectSummary);
-        }
-
-        /// <summary>
-        /// Get all project summaries by xml.
-        /// </summary>
-        /// <returns>String xml.</returns>
-        public string GetProjectSumarryXml()
-        {
-            var xmlSerializerNamespaces = new XmlSerializerNamespaces();
-            xmlSerializerNamespaces.Add(string.Empty, string.Empty);
-
-            var xmlSerializer = new XmlSerializer(typeof(ProjectSummaryList));
-
-            var stringWriter = new StringWriter();
-            var xmlWriter = XmlWriter.Create(stringWriter);
-            xmlSerializer.Serialize(xmlWriter, _projectSummaryList, xmlSerializerNamespaces);
-            return stringWriter.ToString();
         }
     }
 }

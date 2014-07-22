@@ -1,4 +1,4 @@
-﻿namespace Fanex.MsBuild.SummaryDisplay
+﻿namespace Fanex.MSBuild.SummaryDisplay
 {
     using System;
     using System.Xml.Serialization;

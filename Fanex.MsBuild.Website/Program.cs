@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Fanex.MsBuild.Website
+namespace Fanex.MSBuild.Website
 {
     using System;
     using System.Collections;
@@ -16,7 +16,7 @@ namespace Fanex.MsBuild.Website
     /// <summary>
     /// This program find all dependencies from output binaries and copy to \Bin\ folder.
     /// </summary>
-    public class Program
+    public static class Program
     {
         /// <summary>
         /// Program entry point.
@@ -75,8 +75,7 @@ namespace Fanex.MsBuild.Website
         {
             try
             {
-                string outputPath = string.Empty;
-                string projectDir = projectPath.Substring(0, projectPath.LastIndexOf("\\")) + "\\bin\\";
+                string projectDir = projectPath.Substring(0, projectPath.LastIndexOf("\\", StringComparison.CurrentCultureIgnoreCase)) + "\\bin\\";
 
                 string[] filePaths = Directory.GetFiles(projectDir, "*.dll", SearchOption.AllDirectories);
                 if (!Directory.Exists(targetPath))
@@ -86,7 +85,7 @@ namespace Fanex.MsBuild.Website
 
                 foreach (string filePath in filePaths)
                 {
-                    string file = filePath.Substring(filePath.LastIndexOf("\\") + 1);
+                    string file = filePath.Substring(filePath.LastIndexOf("\\", StringComparison.CurrentCultureIgnoreCase) + 1);
                     File.Copy(filePath, targetPath + "\\" + file, true);
                 }
 
@@ -96,47 +95,6 @@ namespace Fanex.MsBuild.Website
             {
                 Console.WriteLine(e.Message);
             }
-        }
-    }
-
-    /// <summary>
-    /// Command line option.
-    /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class Options
-    {
-        [Option("solution", Required = true, HelpText = "Solution that contains website need to build.")]
-        public string Solution
-        {
-            get;
-            set;
-        }
-
-        [Option("website", Required = true, HelpText = "Website need to build.")]
-        public string Website
-        {
-            get;
-            set;
-        }
-
-        [Option("refs", HelpText = "Path of reference assemblies which were seperated by semi-colons.")]
-        public string References
-        {
-            get;
-            set;
-        }
-
-        [Option("root", HelpText = "Root path of solution.")]
-        public string Root
-        {
-            get;
-            set;
-        }
-
-        [HelpOption]
-        public string GetUsage()
-        {
-            return HelpText.AutoBuild(this, (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
         }
     }
 }

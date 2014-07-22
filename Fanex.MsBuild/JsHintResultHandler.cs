@@ -7,7 +7,7 @@
 //   <change who="Ricky.Nguyen" date="2014.2.13">Created</change>
 // </history>
 
-namespace Fanex.MsBuild
+namespace Fanex.MSBuild
 {
     using System;
     using System.IO;
@@ -39,9 +39,9 @@ namespace Fanex.MsBuild
                 {
                     var matchString = "!!!@@@###$$$%%%";
                     string allText = File.ReadAllText(_jscriptHintFilePath);
-                    var indexMatch = allText.LastIndexOf(matchString);
+                    var indexMatch = allText.LastIndexOf(matchString, StringComparison.CurrentCultureIgnoreCase);
                     string resultCharacter = allText[indexMatch + matchString.Length].ToString();
-                    int.TryParse(resultCharacter, out result);
+                    result = int.TryParse(resultCharacter, out result) ? result : 0;
 
                     if (result > 0)
                     {

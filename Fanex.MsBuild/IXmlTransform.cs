@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Fanex.MsBuild
+namespace Fanex.MSBuild
 {
     /// <summary>
     /// XmlTransform interface.

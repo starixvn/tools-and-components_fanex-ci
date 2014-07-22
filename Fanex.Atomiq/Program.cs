@@ -9,24 +9,28 @@ namespace Fanex.Atomiq
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
-    using CommandLine;
-    using CommandLine.Text;
 
     /// <summary>
     /// This program will truncate and transform html report from ATOMIQ.
     /// </summary>
-    public class Program
+    public static class Program
     {
         private const string ReportName = "DRY.REPORT";
 
-        public static string GetCurrentDateTime()
+        public static string CurrentDateTime
         {
-            return Environment.GetEnvironmentVariable("BUILD_ID");
+            get
+            {
+                return Environment.GetEnvironmentVariable("BUILD_ID");
+            }
         }
 
-        public static string GetBranchName()
+        public static string BranchName
         {
-            return Environment.GetEnvironmentVariable("GIT_BRANCH");
+            get
+            {
+                return Environment.GetEnvironmentVariable("GIT_BRANCH");
+            }
         }
 
         /// <summary>
@@ -39,12 +43,12 @@ namespace Fanex.Atomiq
             string result = path;
 
             // Solving parsing error when string end with \
-            if (result.EndsWith("\""))
+            if (result.EndsWith("\"", StringComparison.CurrentCultureIgnoreCase))
             {
                 result = path.Remove(result.Length - 1, 1);
             }
 
-            if (!result.EndsWith("\\"))
+            if (!result.EndsWith("\\", StringComparison.CurrentCultureIgnoreCase))
             {
                 result += "\\";
             }
@@ -62,14 +66,14 @@ namespace Fanex.Atomiq
         /// <returns>Return replaced string.</returns>
         private static string ReplaceSection(string start, string end, string content, string section)
         {
-            int from = content.IndexOf(start);
+            int from = content.IndexOf(start, StringComparison.CurrentCultureIgnoreCase);
 
             if (from < 0)
             {
                 return content;
             }
 
-            int to = content.IndexOf(end, from);
+            int to = content.IndexOf(end, from, StringComparison.CurrentCultureIgnoreCase);
 
             if (to < 0)
             {
@@ -99,11 +103,11 @@ namespace Fanex.Atomiq
         /// <param name="content">Input content.</param>
         /// <returns>Return replaced string.</returns>
         private static string ReplaceHeaderImg(string content)
-        {            
+        {
             string start = "<img style=\"margin: 23px 0px 0px 30px; padding: 0px;\"";
             string end = "</div>";
 
-            string newHeader = "<h2 style=\"color: #eee; padding: 4px\"> Atomiq build - " + GetCurrentDateTime() + " - " + GetBranchName() + "</h2>";
+            string newHeader = "<h2 style=\"color: #eee; padding: 4px\"> Atomiq build - " + CurrentDateTime + " - " + BranchName + "</h2>";
 
             /*
 
@@ -112,7 +116,8 @@ namespace Fanex.Atomiq
             height: 120px;
             text-align: left;
             width: 100%;
-            }
+            }
+
             */
 
             content = ReplaceSection(start, end, content, newHeader);
@@ -148,7 +153,7 @@ namespace Fanex.Atomiq
 
                     if (!string.IsNullOrEmpty(options.DuplicateAsError))
                     {
-                        bool.TryParse(options.DuplicateAsError, out duplicateAsError);
+                        duplicateAsError = bool.TryParse(options.DuplicateAsError, out duplicateAsError) ? duplicateAsError : false;
                     }
 
                     string outputDir = options.RootDirectory + options.Name + "\\cireport\\";
@@ -157,7 +162,7 @@ namespace Fanex.Atomiq
                     string file = outputDir + ReportName + ".htm";
                     if (File.Exists(file))
                     {
-                        if (File.ReadAllText(file).StartsWith("System.InvalidOperationException: Sequence contains no elements"))
+                        if (File.ReadAllText(file).StartsWith("System.InvalidOperationException: Sequence contains no elements", StringComparison.CurrentCultureIgnoreCase))
                         {
                             // Copy default file
                             StreamWriter writer = File.CreateText(file);
@@ -189,40 +194,6 @@ namespace Fanex.Atomiq
             }
 
             return 0;
-        }
-    }
-
-    /// <summary>
-    /// Command line option.
-    /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class Options
-    {
-        [Option("root", Required = true, HelpText = "Root workspace.")]
-        public string RootDirectory
-        {
-            get;
-            set;
-        }
-
-        [Option("name", Required = true, HelpText = "Job name.")]
-        public string Name
-        {
-            get;
-            set;
-        }
-
-        [Option("duplicateaserror", Required = false, HelpText = "Treat duplicated code as error.")]
-        public string DuplicateAsError
-        {
-            get;
-            set;
-        }
-
-        [HelpOption]
-        public string GetUsage()
-        {
-            return HelpText.AutoBuild(this, (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
         }
     }
 }

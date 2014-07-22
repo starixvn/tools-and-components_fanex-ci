@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Fanex.MsDeploy
+namespace Fanex.MSDeploy
 {
     using System;
     using System.Linq;

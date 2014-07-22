@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Fanex.MsBuild
+namespace Fanex.MSBuild
 {
     using System;
     using System.IO;
@@ -28,7 +28,7 @@ namespace Fanex.MsBuild
                 throw new FieldAccessException("Could not access to directory " + path);
             }
 
-            if (path.EndsWith(@"\"))
+            if (path.EndsWith(@"\", StringComparison.CurrentCultureIgnoreCase))
             {
                 this._filePath = path;
             }

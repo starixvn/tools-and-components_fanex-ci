@@ -7,9 +7,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.Atomiq", "Fanex.Atomi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.FxCop", "Fanex.FxCop\Fanex.FxCop.csproj", "{7D572637-1002-43C0-93C0-71A77F803B56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.MsDeploy", "Fanex.MsDeploy\Fanex.MsDeploy.csproj", "{971B047B-4E2A-47B3-BA70-E713035F1D77}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.MSDeploy", "Fanex.MsDeploy\Fanex.MSDeploy.csproj", "{971B047B-4E2A-47B3-BA70-E713035F1D77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.MsBuild.Website", "Fanex.MsBuild.Website\Fanex.MsBuild.Website.csproj", "{6D63FEF3-CFB7-4ED7-ACBF-8B8699F015B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.MSBuild.Website", "Fanex.MsBuild.Website\Fanex.MSBuild.Website.csproj", "{6D63FEF3-CFB7-4ED7-ACBF-8B8699F015B5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeAnalysis", "CodeAnalysis", "{94C469E8-6735-4B77-B0CF-FC4B0A0C6462}"
+	ProjectSection(SolutionItems) = preProject
+		CodeAnalysis\CodeAnalysisConfiguration.xml = CodeAnalysis\CodeAnalysisConfiguration.xml
+		CodeAnalysis\FxCopDictionary.xml = CodeAnalysis\FxCopDictionary.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

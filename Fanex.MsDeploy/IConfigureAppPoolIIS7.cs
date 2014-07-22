@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Fanex.MsDeploy
+namespace Fanex.MSDeploy
 {
     public interface IConfigureAppPoolIIS7
     {

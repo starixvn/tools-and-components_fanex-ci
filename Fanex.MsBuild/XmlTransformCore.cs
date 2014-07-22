@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Fanex.MsBuild
+namespace Fanex.MSBuild
 {
     using System;
     using System.IO;

@@ -4,13 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Fanex.MsBuild
+namespace Fanex.MSBuild
 {
     using System;
     using System.Configuration;
     using System.IO;
-    using System.Text.RegularExpressions;
-    using Fanex.MsBuild.SummaryDisplay;
+    using Fanex.MSBuild.SummaryDisplay;
 
     /// <summary>
     /// TODO: Update summary.
@@ -23,20 +22,26 @@ namespace Fanex.MsBuild
         private static int numberOfErrors = 0;
         private static string projectName = string.Empty;
 
-        public static string GetCurrentDateTime()
+        public static string CurrentDateTime
         {
-            return Environment.GetEnvironmentVariable("BUILD_ID");
+            get
+            {
+                return Environment.GetEnvironmentVariable("BUILD_ID");
+            }
         }
 
-        public static string GetBranchName()
+        public static string BranchName
         {
-            return Environment.GetEnvironmentVariable("GIT_BRANCH");
+            get
+            {
+                return Environment.GetEnvironmentVariable("GIT_BRANCH");
+            }
         }
 
         public static string GetSolutionName(string path)
         {
-            int start = path.LastIndexOf("\\");
-            int end = path.LastIndexOf(".sln");
+            int start = path.LastIndexOf("\\", StringComparison.CurrentCultureIgnoreCase);
+            int end = path.LastIndexOf(".sln", StringComparison.CurrentCultureIgnoreCase);
 
             string name = path.Substring(start + 1, end - start - 1);
             return name;
@@ -44,8 +49,8 @@ namespace Fanex.MsBuild
 
         public string GetProjectName(string path)
         {
-            int start = path.LastIndexOf("\\");
-            int end = path.LastIndexOf(".csproj");
+            int start = path.LastIndexOf("\\", StringComparison.CurrentCultureIgnoreCase);
+            int end = path.LastIndexOf(".csproj", StringComparison.CurrentCultureIgnoreCase);
 
             string name = path.Substring(start + 1, end - start - 1);
             return name;
@@ -54,7 +59,7 @@ namespace Fanex.MsBuild
         public string GetDirectoryPath(string path)
         {
             int start = 0;
-            int end = path.LastIndexOf("\\");
+            int end = path.LastIndexOf("\\", StringComparison.CurrentCultureIgnoreCase);
 
             string name = path.Substring(start, end - start);
             return name;

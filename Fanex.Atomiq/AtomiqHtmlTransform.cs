@@ -7,9 +7,6 @@
 namespace Fanex.Atomiq
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     /// <summary>
     /// TODO: Update summary.
@@ -19,7 +16,7 @@ namespace Fanex.Atomiq
         public string HtmlFile
         {
             get;
-            private set;
+            set;
         }
 
         public string Transform(string htmlFile)

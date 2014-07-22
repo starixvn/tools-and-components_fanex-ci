@@ -12,65 +12,17 @@ namespace Fanex.FxCop
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Xml;
-    using CommandLine;
-    using CommandLine.Text;
 
     /// <summary>
     /// This program will pick all projects that have output type is "Class Library" then run FXCOP for these output assemblies.
     /// </summary>
-    public class Program
+    public static class Program
     {
-        public static Options Options
-        {
-            get;
-            private set;
-        }
+        private static CodeAnalysisConfiguration _solutionCodeAnalysisConfiguration;
 
-        /// <summary>
-        /// Correct directory path.
-        /// </summary>
-        /// <param name="path">Input path.</param>
-        /// <returns>Return corrected path.</returns>
-        private static string CorrectDirectoryPath(string path)
-        {
-            string result = path;
+        private static CodeAnalysisHelper _codeAnalysisHelper;
 
-            // Solving parsing error when string end with \
-            if (result.EndsWith("\""))
-            {
-                result = path.Remove(result.Length - 1, 1);
-            }
-
-            if (!result.EndsWith("\\"))
-            {
-                result += "\\";
-            }
-
-            return result;
-        }
-
-        private static string GetProjectName(string path)
-        {
-            int start = path.LastIndexOf("\\");
-            int end = path.LastIndexOf(".csproj");
-
-            string name = path.Substring(start + 1, end - start - 1);
-            return name;
-        }
-
-        /// <summary>
-        /// Correct directory path.
-        /// </summary>
-        /// <param name="path">Input path.</param>
-        /// <returns>Return corrected path.</returns>
-        private static string GetDirectoryPath(string path)
-        {
-            int start = 0;
-            int end = path.LastIndexOf("\\");
-
-            string name = path.Substring(start, end - start);
-            return name;
-        }
+        private static Options _options;
 
         /// <summary>
         /// Program entry point.
@@ -80,50 +32,60 @@ namespace Fanex.FxCop
         [SuppressMessage("StyleCop.CSharp.Nexcel.NexcelCustomRules", "SP2101:MethodMustNotContainMoreLinesThan", Justification = "Reviewed.")]
         private static int Main(string[] args)
         {
-            Options = new Options();
+            _codeAnalysisHelper = new CodeAnalysisHelper
+            {
+                RuleSetsDirectory = DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["RuleSetsDirectory"])
+            };
+            _options = new Options();
 
             try
             {
-                if (CommandLine.Parser.Default.ParseArguments(args, Options))
+                if (!CommandLine.Parser.Default.ParseArguments(args, _options))
                 {
-                    Options.RootDirectory = CorrectDirectoryPath(Options.RootDirectory);
+                    return 0;
+                }
 
-                    // Find all csproj whose output type is library
-                    string[] projects = Directory.GetFiles(Options.RootDirectory + Options.Name, "*.csproj", SearchOption.AllDirectories);
-                    foreach (string project in projects)
+                _options.RootDirectory = DirectoryHelper.CorrectDirectoryPath(_options.RootDirectory);
+
+                DetectMasterCodeAnalysis(_options.RootDirectory + _options.Name);
+
+                // Find all csproj whose output type is library
+                var projects = Directory.GetFiles(_options.RootDirectory + _options.Name, "*.csproj", SearchOption.AllDirectories);
+                foreach (string project in projects)
+                {
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load(project);
+
+                    XmlNode outputTypeNode = doc.SelectSingleNode("*/*[local-name()='PropertyGroup']/*[local-name()='OutputType']");
+                    if (outputTypeNode == null)
                     {
-                        XmlDocument doc = new XmlDocument();
-                        doc.Load(project);
-                        XmlNode root = doc.DocumentElement;
+                        continue;
+                    }
 
-                        XmlNode outputTypeNode = doc.SelectSingleNode("*/*[local-name()='PropertyGroup']/*[local-name()='OutputType']");
-                        if (outputTypeNode != null && outputTypeNode.InnerText != "Library")
-                        {
-                            continue;
-                        }
+                    var outputType = outputTypeNode.InnerText;
 
-                        XmlNode outputPathNode = doc.SelectSingleNode("*/*[local-name()='PropertyGroup']/*[local-name()='OutputPath']");
-                        if (outputPathNode == null || string.IsNullOrEmpty(outputPathNode.InnerText))
-                        {
-                            continue;
-                        }
+                    XmlNode outputPathNode = doc.SelectSingleNode("*/*[local-name()='PropertyGroup']/*[local-name()='OutputPath']");
+                    if (outputPathNode == null || string.IsNullOrEmpty(outputPathNode.InnerText))
+                    {
+                        continue;
+                    }
 
-                        string dir = GetDirectoryPath(project);
-                        string output = outputPathNode.InnerText;
-                        string projectName = GetProjectName(project);
-                        string assemblyPath = dir + "\\" + output;
-                        string assemblyName = doc.SelectSingleNode("*/*[local-name()='PropertyGroup']/*[local-name()='AssemblyName']").InnerText + ".dll";
-                        string outputName = projectName + ".FxCop.xml";
+                    string dir = DirectoryHelper.GetDirectoryPath(project);
+                    string output = outputPathNode.InnerText;
+                    string projectName = DirectoryHelper.GetProjectName(project);
+                    string assemblyPath = dir + "\\" + output;
+                    string assemblyName = doc.SelectSingleNode("*/*[local-name()='PropertyGroup']/*[local-name()='AssemblyName']").InnerText
+                        + (outputType == "Exe" ? ".exe" : ".dll");
+                    string outputName = projectName + ".FxCop.xml";
 
-                        // Run FxCop
-                        if (File.Exists(assemblyPath + assemblyName))
-                        {
-                            RunFxCop(assemblyPath + assemblyName, dir + "\\" + outputName);
-                        }
+                    // Run FxCop
+                    if (File.Exists(assemblyPath + assemblyName))
+                    {
+                        RunFxCop(dir, assemblyPath + assemblyName, dir + "\\" + outputName);
                     }
                 }
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 Console.WriteLine("ERROR.");
                 Console.WriteLine(e.Message);
@@ -135,32 +97,37 @@ namespace Fanex.FxCop
         }
 
         /// <summary>
-        /// Start run FX cop.
+        /// Runs the FX cop.
         /// </summary>
-        /// <param name="assembly">Assembly path.</param>
-        /// <param name="output">Output report.</param>
-        private static void RunFxCop(string assembly, string output)
+        /// <param name="projectDirectory">The project directory.</param>
+        /// <param name="assembly">The assembly.</param>
+        /// <param name="output">The output.</param>
+        private static void RunFxCop(string projectDirectory, string assembly, string output)
         {
-            string path = CorrectDirectoryPath(ConfigurationManager.AppSettings["FxCopPath"]);
+            var codeAnalysisConfiguration = _codeAnalysisHelper.GetConfiguration(projectDirectory, _solutionCodeAnalysisConfiguration);
+
+            var path = DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["FxCopDirectory"]);
             string command = "FxCopCmd.exe";
 
-            string ruleArg = "/r:\"" + path + "Rules\"";
+            var defaultArg = "/ignoregeneratedcode";
+            var ruleArg = " /r:\"" + path + "Rules\"";
 
-            string refArg = " /d:\"" + CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_NET40"]) + "\\\"";
-            refArg += " /d:\"" + CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNETMVC4"]) + "\\\"";
-            refArg += " /d:\"" + CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNETMVC3"]) + "\\\"";
-            refArg += " /d:\"" + CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNETMVC2"]) + "\\\"";
-            refArg += " /d:\"" + CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNET"]) + "\\\"";
-            refArg += " /d:\"" + CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_IDE"]) + "\\\"";
+            var refArg = " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_NET40"]) + "\\\"";
+            refArg += " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNETMVC4"]) + "\\\"";
+            refArg += " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNETMVC3"]) + "\\\"";
+            refArg += " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNETMVC2"]) + "\\\"";
+            refArg += " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNET"]) + "\\\"";
+            refArg += " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_IDE"]) + "\\\"";
 
-            string fileArg = " /f:\"" + assembly + "\"";
+            var fileArg = " /f:\"" + assembly + "\"";
 
-            string rulesetArg = " /ruleset:-\"" + ConfigurationManager.AppSettings["AllRuleset"] + "\"";
-            rulesetArg += " /ruleset:+\"" + ConfigurationManager.AppSettings["RecommendedRuleset"] + "\"";
+            var rulesetArg = " /ruleset:-\"" + ConfigurationManager.AppSettings["AllRuleset"] + "\"";
+            rulesetArg += " /ruleset:+\"" + codeAnalysisConfiguration.RuleSet + "\"";
 
-            string outputArg = " /o:\"" + output + "\"";
+            var dictionaryArg = " /dictionary:\"" + codeAnalysisConfiguration.Dictionary + "\"";
+            var outputArg = " /o:\"" + output + "\"";
 
-            string arguments = ruleArg + refArg + fileArg + rulesetArg + outputArg;
+            var arguments = defaultArg + ruleArg + refArg + fileArg + rulesetArg + dictionaryArg + outputArg;
 
             try
             {
@@ -171,39 +138,30 @@ namespace Fanex.FxCop
                 process.StartInfo.UseShellExecute = false;
                 process.Start();
 
-                Console.WriteLine(process.StandardOutput.ReadToEnd());
+                var standardOutput = process.StandardOutput.ReadToEnd();
+                Console.WriteLine(standardOutput);
                 process.WaitForExit();
             }
             catch
             {
             }
         }
-    }
 
-    /// <summary>
-    /// Command line option.
-    /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class Options
-    {
-        [Option("root", Required = true, HelpText = "Root workspace.")]
-        public string RootDirectory
+        /// <summary>
+        /// Detects the master code analysis.
+        /// </summary>
+        /// <param name="rootDirectory">The root directory.</param>
+        private static void DetectMasterCodeAnalysis(string rootDirectory)
         {
-            get;
-            set;
-        }
+            _solutionCodeAnalysisConfiguration = new CodeAnalysisConfiguration
+            {
+                RuleSet = ConfigurationManager.AppSettings["RecommendedRuleset"],
+                Dictionary = ConfigurationManager.AppSettings["RecommendedDictionary"]
+            };
 
-        [Option("name", Required = true, HelpText = "Job name.")]
-        public string Name
-        {
-            get;
-            set;
-        }
-
-        [HelpOption]
-        public string GetUsage()
-        {
-            return HelpText.AutoBuild(this, (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
+            _solutionCodeAnalysisConfiguration = _codeAnalysisHelper.GetConfiguration(
+                rootDirectory,
+                _solutionCodeAnalysisConfiguration);
         }
     }
 }

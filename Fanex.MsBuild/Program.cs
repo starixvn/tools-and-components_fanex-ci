@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Fanex.MsBuild
+namespace Fanex.MSBuild
 {
     using System;
     using System.Configuration;
@@ -13,12 +13,12 @@ namespace Fanex.MsBuild
     using System.Text;
     using CommandLine;
     using CommandLine.Text;
-    using Fanex.MsBuild.SummaryDisplay;
+    using Fanex.MSBuild.SummaryDisplay;
 
     /// <summary>
     /// This program will generate html report for MSBuild and StyleCop.
     /// </summary>
-    public class Program
+    public static class Program
     {
         private const string ReportName = "MSBUILD.REPORT";
         private const string JsHintReportName = "JSHINT.REPORT.htm";
@@ -47,14 +47,14 @@ namespace Fanex.MsBuild
             private set;
         }
 
-        public static string Replace(string text, string search, string replace)
+        public static string Replace(string text, string oldText, string newText)
         {
             string output = text;
 
-            output = output.Replace(search, replace);
+            output = output.Replace(oldText, newText);
 
-            search = search.Substring(0, 1).ToLower() + search.Substring(1);
-            output = output.Replace(search, replace);
+            oldText = oldText.Substring(0, 1).ToLower() + oldText.Substring(1);
+            output = output.Replace(oldText, newText);
 
             return output;
         }
@@ -79,12 +79,12 @@ namespace Fanex.MsBuild
             string result = path;
 
             // Solving parsing error when string end with \
-            if (result.EndsWith("\""))
+            if (result.EndsWith("\"", StringComparison.CurrentCultureIgnoreCase))
             {
                 result = path.Remove(result.Length - 1, 1);
             }
 
-            if (!result.EndsWith("\\"))
+            if (!result.EndsWith("\\", StringComparison.CurrentCultureIgnoreCase))
             {
                 result += "\\";
             }
@@ -101,7 +101,7 @@ namespace Fanex.MsBuild
         {
             Options = new Options();
             Environment.SetEnvironmentVariable("ERRORLEVEL", "0", EnvironmentVariableTarget.Process);
-            
+
             try
             {
                 if (CommandLine.Parser.Default.ParseArguments(args, Options))
@@ -110,6 +110,7 @@ namespace Fanex.MsBuild
 
                     EmailConsole = new EmailSummaryConsole(Options.RootDirectory + Options.Name + "\\");
                     SummaryDisplayConsole = new SummaryDisplayConsole();
+                    SummaryDisplayConsole.RemoveXml(Options.RootDirectory + Options.Name + "\\");
 
                     MSBuildXmlTransform buildTransform = new MSBuildXmlTransform();
                     string output = buildTransform.Transform(Options.RootDirectory + Options.Name + "\\" + ConfigurationManager.AppSettings["MsBuildXml"]);
@@ -117,13 +118,7 @@ namespace Fanex.MsBuild
                     // Remove root directory C:\Program Files\Jenkins\workspace\
                     output = Replace(output, Options.RootDirectory, string.Empty);
                     OutputDir = Options.RootDirectory + Options.Name + "\\cireport\\";
-
-                    // Check JSHint Result
-                    if (Program.Options.JsHintAsError == "true")
-                    {
-                        JsHintResultHandler jscriptHintHandler = new JsHintResultHandler(Program.OutputDir + "\\" + JsHintReportName);
-                    }
-
+     
                     // Latest report
                     File.WriteAllText(OutputDir + ReportName + ".htm", output, Encoding.UTF8);
 
@@ -150,11 +145,13 @@ namespace Fanex.MsBuild
         private static int ShowResult()
         {
             int error = 0;
-            int.TryParse(Environment.GetEnvironmentVariable("ERRORLEVEL", EnvironmentVariableTarget.Process), out error);
+            error = int.TryParse(Environment.GetEnvironmentVariable("ERRORLEVEL", EnvironmentVariableTarget.Process), out error)
+                ? error
+                : 0;
 
             if (error > 0)
             {
-                Console.WriteLine("FAILED.");
+                Console.WriteLine("FAILED. Error Code:" + error);
             }
             else
             {
@@ -162,68 +159,6 @@ namespace Fanex.MsBuild
             }
 
             return error;
-        }
-    }
-
-    /// <summary>
-    /// Command line option.
-    /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class Options
-    {
-        [Option("root", Required = true, HelpText = "Root workspace.")]
-        public string RootDirectory
-        {
-            get;
-            set;
-        }
-
-        [Option("name", Required = true, HelpText = "Job name.")]
-        public string Name
-        {
-            get;
-            set;
-        }
-
-        [Option("buildid", Required = true, HelpText = "Build id.")]
-        public string BuildId
-        {
-            get;
-            set;
-        }
-
-        [Option("stylecopaserror", Required = false, HelpText = "Treat StyleCop warning as error with MSBuild.")]
-        public string StyleCopAsError
-        {
-            get;
-            set;
-        }
-
-        [Option("fxcopaserror", Required = false, HelpText = "Treat FxCop warning as error with MSBuild.")]
-        public string FxCopAsError
-        {
-            get;
-            set;
-        }
-
-        [Option("warningaserror", Required = false, HelpText = "Treat warning as error with MSBuild.")]
-        public string WarningAsError
-        {
-            get;
-            set;
-        }
-
-        [Option("jshintaserror", Required = false, HelpText = "Treat jshint warning as error with MSBuild.")]
-        public string JsHintAsError
-        {
-            get;
-            set;
-        }
-
-        [HelpOption]
-        public string GetUsage()
-        {
-            return HelpText.AutoBuild(this, (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
         }
     }
 }

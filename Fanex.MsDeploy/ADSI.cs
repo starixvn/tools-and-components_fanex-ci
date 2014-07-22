@@ -4,10 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Fanex.MsDeploy
+namespace Fanex.MSDeploy
 {
     using System;
-    using System.Collections.Generic;
     using System.DirectoryServices;
 
     /// <summary>
@@ -48,7 +47,7 @@ namespace Fanex.MsDeploy
             metabasePath = "IIS://" + options.Host + "/W3SVC/" + options.RootWebsite + "/Root/" + options.Application;
             DirectoryEntry dir = new DirectoryEntry(metabasePath);
             string className = dir.SchemaClassName.ToString();
-            if (className.EndsWith("VirtualDir"))
+            if (className.EndsWith("VirtualDir", StringComparison.CurrentCultureIgnoreCase))
             {
                 object[] param = { 0, options.Pool, true };
                 dir.Invoke("AppCreate3", param);
@@ -69,7 +68,6 @@ namespace Fanex.MsDeploy
             {
                 DirectoryEntry path = entry;
                 PropertyValueCollection propValues = path.Properties[propertyName];
-                object oldObj = propValues.Value;
 
                 newValue = newValue.Trim();
                 string[] newValueSplit = newValue.Split(new char[] { ',' });

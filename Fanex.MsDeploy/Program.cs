@@ -4,10 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Fanex.MsDeploy
+namespace Fanex.MSDeploy
 {
     using System;
-    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using CommandLine;
@@ -16,7 +15,7 @@ namespace Fanex.MsDeploy
     /// <summary>
     /// This program will config application pool for remote website and config automation test variables.
     /// </summary>
-    public class Program
+    public static class Program
     {
         private const string ConfigPy = "/_AutomationTest/config.py";
         private const string RunTest = "/_AutomationTest/run.bat";
@@ -72,7 +71,7 @@ namespace Fanex.MsDeploy
                 string[] configs = File.ReadAllLines(file);
                 foreach (string line in configs)
                 {
-                    if (line.StartsWith("Url=") || line.StartsWith("Url ="))
+                    if (line.StartsWith("Url=", StringComparison.CurrentCultureIgnoreCase) || line.StartsWith("Url =", StringComparison.CurrentCultureIgnoreCase))
                     {
                         newConfig += "Url='" + testbase + application + "'\r\n";
                     }
@@ -84,47 +83,6 @@ namespace Fanex.MsDeploy
 
                 File.WriteAllText(file, newConfig);
             }
-        }
-    }
-
-    /// <summary>
-    /// Command line option.
-    /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class Options
-    {
-        [Option("host", Required = true, HelpText = "Host machine.")]
-        public string Host
-        {
-            get;
-            set;
-        }
-
-        [Option("root", Required = true, HelpText = "Root website or site id.")]
-        public string RootWebsite
-        {
-            get;
-            set;
-        }
-
-        [Option("app", Required = true, HelpText = "Application name.")]
-        public string Application
-        {
-            get;
-            set;
-        }
-
-        [Option("pool", Required = true, HelpText = "Application pool name.")]
-        public string Pool
-        {
-            get;
-            set;
-        }
-
-        [HelpOption]
-        public string GetUsage()
-        {
-            return HelpText.AutoBuild(this, (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
         }
     }
 }

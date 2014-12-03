@@ -1,6 +1,7 @@
 ﻿namespace Fanex.MSBuild.SummaryDisplay
 {
     using System.Collections.Generic;
+    using System.Text;
     using System.Xml.Serialization;
 
     /// <summary>
@@ -27,6 +28,17 @@
         public void Clear()
         {
             Projects.Clear();
+        }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            foreach (ProjectSummary project in Projects)
+            {
+                builder.AppendLine(project.ToString());
+            }
+
+            return builder.ToString();
         }
     }
 }

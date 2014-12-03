@@ -19,5 +19,24 @@
         public int StyleCop { get; set; }
 
         public int FxCop { get; set; }
+
+        public int ErrorCount
+        {
+            get
+            {
+                return Error + Warning + FxCop + StyleCop;
+            }
+        }
+
+        public override string ToString()
+        {
+            return string.Format(
+                "{0}.\t{1} errors.\t{2} warnings.\t{3} stylecop errors.\t{4} fxcopy errors",
+                Name,
+                Error,
+                Warning,
+                StyleCop,
+                FxCop);
+        }
     }
 }

@@ -156,7 +156,7 @@ namespace Fanex.Atomiq
                         duplicateAsError = bool.TryParse(options.DuplicateAsError, out duplicateAsError) ? duplicateAsError : false;
                     }
 
-                    string outputDir = options.RootDirectory + options.Name + "\\cireport\\";
+                    string outputDir = options.RootDirectory + options.Name + "\\cireport\\dryreport\\";
 
                     // Check exist
                     string file = outputDir + ReportName + ".htm";

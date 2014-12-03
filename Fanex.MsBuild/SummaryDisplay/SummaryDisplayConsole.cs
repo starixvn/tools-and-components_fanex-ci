@@ -3,6 +3,7 @@
     using System;
     using System.Configuration;
     using System.IO;
+    using System.Linq;
     using System.Xml;
     using System.Xml.Serialization;
     using System.Xml.Xsl;
@@ -75,8 +76,6 @@
                         }
                     }
                 }
-
-                _projectSummaryList.Clear();
             }
             catch
             {
@@ -98,6 +97,31 @@
         public void AddProjectSummary(ProjectSummary projectSummary)
         {
             _projectSummaryList.Add(projectSummary);
+        }
+
+        /// <summary>
+        /// Show build result.
+        /// </summary>
+        /// <returns>
+        /// Return error code.
+        /// </returns>
+        public int ShowResult()
+        {
+            var errorCount = _projectSummaryList.Projects.Sum(p => p.ErrorCount);
+            Environment.SetEnvironmentVariable("ERRORLEVEL", errorCount.ToString(), EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("ERRORLEVELINFO", _projectSummaryList.ToString(), EnvironmentVariableTarget.Process);
+            
+            if (errorCount > 0)
+            {
+                Console.WriteLine("FAILED. ERRORLEVEL:" + errorCount);
+                Console.WriteLine("FAILED. ERRORLEVELINFO:" + Environment.GetEnvironmentVariable("ERRORLEVELINFO", EnvironmentVariableTarget.Process));
+            }
+            else
+            {
+                Console.WriteLine("SUCCESS.");
+            }
+
+            return errorCount;
         }
     }
 }

@@ -8,11 +8,8 @@ namespace Fanex.MSBuild
 {
     using System;
     using System.Configuration;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Text;
-    using CommandLine;
-    using CommandLine.Text;
     using Fanex.MSBuild.SummaryDisplay;
 
     /// <summary>
@@ -117,7 +114,7 @@ namespace Fanex.MSBuild
 
                     // Remove root directory C:\Program Files\Jenkins\workspace\
                     output = Replace(output, Options.RootDirectory, string.Empty);
-                    OutputDir = Options.RootDirectory + Options.Name + "\\cireport\\";
+                    OutputDir = Options.RootDirectory + Options.Name + "\\cireport\\msbuildreport\\";
                     
                     // Check JSHint Result
                     if (Program.Options.JsHintAsError == "true")
@@ -130,7 +127,7 @@ namespace Fanex.MSBuild
 
                     EmailConsole.Close();
                     SummaryDisplayConsole.FlushXml(Options.RootDirectory + Options.Name + "\\");
-                    return ShowResult();
+                    return SummaryDisplayConsole.ShowResult();
                 }
             }
             catch (Exception e)
@@ -142,29 +139,6 @@ namespace Fanex.MSBuild
             }
 
             return 0;
-        }
-
-        /// <summary>
-        /// Show result information.
-        /// </summary>
-        /// <returns>Error Information.</returns>
-        private static int ShowResult()
-        {
-            int error = 0;
-            error = int.TryParse(Environment.GetEnvironmentVariable("ERRORLEVEL", EnvironmentVariableTarget.Process), out error)
-                ? error
-                : 0;
-
-            if (error > 0)
-            {
-                Console.WriteLine("FAILED. Error Code:" + error);
-            }
-            else
-            {
-                Console.WriteLine("SUCCESS.");
-            }
-
-            return error;
         }
     }
 }

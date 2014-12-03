@@ -46,6 +46,7 @@ namespace Fanex.MSBuild
                     if (result > 0)
                     {
                         Environment.SetEnvironmentVariable("ERRORLEVEL", result.ToString(), EnvironmentVariableTarget.Process);
+                        Environment.SetEnvironmentVariable("LASTERRORMESSAGE", "Error from JsHintResultHandler", EnvironmentVariableTarget.Process);
                     }
                 }
             }

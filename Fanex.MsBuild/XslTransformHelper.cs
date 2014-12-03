@@ -179,11 +179,6 @@ namespace Fanex.MSBuild
                 exitCode += numberOfWarnings;
             }
 
-            if (exitCode > 0)
-            {
-                Environment.SetEnvironmentVariable("ERRORLEVEL", exitCode.ToString(), EnvironmentVariableTarget.Process);
-            }
-
             Program.EmailConsole.WriteLine("</TR>");
 
             var projectSummary = new ProjectSummary

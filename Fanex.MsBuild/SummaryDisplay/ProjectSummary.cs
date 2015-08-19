@@ -20,13 +20,7 @@
 
         public int FxCop { get; set; }
 
-        public int ErrorCount
-        {
-            get
-            {
-                return Error + Warning + FxCop + StyleCop;
-            }
-        }
+        public int ErrorCount { get; set; }
 
         public override string ToString()
         {

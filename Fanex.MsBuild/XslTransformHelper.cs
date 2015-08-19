@@ -187,7 +187,8 @@ namespace Fanex.MSBuild
                 Error = numberOfErrors,
                 Warning = numberOfWarnings,
                 FxCop = numberOfFxCopViolations,
-                StyleCop = numberOfStyleCopViolations
+                StyleCop = numberOfStyleCopViolations,
+                ErrorCount = exitCode
             };
             Program.SummaryDisplayConsole.AddProjectSummary(projectSummary);
 

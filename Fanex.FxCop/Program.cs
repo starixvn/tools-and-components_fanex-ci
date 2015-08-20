@@ -12,13 +12,14 @@ namespace Fanex.FxCop
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Xml;
+    using System.Collections.Generic;
 
     /// <summary>
     /// This program will pick all projects that have output type is "Class Library" then run FXCOP for these output assemblies.
     /// </summary>
     public static class Program
     {
-        private static CodeAnalysisConfiguration _solutionCodeAnalysisConfiguration;
+        private static CodeAnalysisConfiguration _defaultCodeAnalysisConfiguration;
 
         private static CodeAnalysisHelper _codeAnalysisHelper;
 
@@ -47,7 +48,7 @@ namespace Fanex.FxCop
 
                 _options.RootDirectory = DirectoryHelper.CorrectDirectoryPath(_options.RootDirectory);
 
-                DetectMasterCodeAnalysis(_options.RootDirectory + _options.Name);
+                InitializeDefaultConfiguration(_options.RootDirectory + _options.Name);
 
                 // Find all csproj whose output type is library
                 var projects = Directory.GetFiles(_options.RootDirectory + _options.Name, "*.csproj", SearchOption.AllDirectories);
@@ -81,7 +82,7 @@ namespace Fanex.FxCop
                     // Run FxCop
                     if (File.Exists(assemblyPath + assemblyName))
                     {
-                        RunFxCop(dir, assemblyPath + assemblyName, dir + "\\" + outputName);
+                        RunFxCop(project, assemblyPath + assemblyName, dir + "\\" + outputName);
                     }
                 }
             }
@@ -96,15 +97,9 @@ namespace Fanex.FxCop
             return 0;
         }
 
-        /// <summary>
-        /// Runs the FX cop.
-        /// </summary>
-        /// <param name="projectDirectory">The project directory.</param>
-        /// <param name="assembly">The assembly.</param>
-        /// <param name="output">The output.</param>
-        private static void RunFxCop(string projectDirectory, string assembly, string output)
+        private static void RunFxCop(string projectFile, string assembly, string output)
         {
-            var codeAnalysisConfiguration = _codeAnalysisHelper.GetConfiguration(projectDirectory, _solutionCodeAnalysisConfiguration);
+            var codeAnalysisConfiguration = _codeAnalysisHelper.GetConfiguration(projectFile, _defaultCodeAnalysisConfiguration);
 
             var path = DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["FxCopDirectory"]);
             string command = "FxCopCmd.exe";
@@ -112,23 +107,31 @@ namespace Fanex.FxCop
             var defaultArg = "/ignoregeneratedcode";
             var ruleArg = " /r:\"" + path + "Rules\"";
 
-            var refArg = " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_NET40"]) + "\\\"";
-            refArg += " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNETMVC4"]) + "\\\"";
-            refArg += " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNETMVC3"]) + "\\\"";
-            refArg += " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNETMVC2"]) + "\\\"";
-            refArg += " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_ASPNET"]) + "\\\"";
-            refArg += " /d:\"" + DirectoryHelper.CorrectDirectoryPath(ConfigurationManager.AppSettings["GAC_IDE"]) + "\\\"";
+            var refArg = " /d:\"" + ConfigurationManager.AppSettings["GAC_NET40"] + "\"";
+            refArg += " /d:\"" + ConfigurationManager.AppSettings["GAC_ASPNETMVC4"] + "\"";
+            refArg += " /d:\"" + ConfigurationManager.AppSettings["GAC_ASPNETMVC3"] + "\"";
+            refArg += " /d:\"" + ConfigurationManager.AppSettings["GAC_ASPNETMVC2"] + "\"";
+            refArg += " /d:\"" + ConfigurationManager.AppSettings["GAC_ASPNET"] + "\"";
+            refArg += " /d:\"" + ConfigurationManager.AppSettings["GAC_IDE"] + "\"";
 
             var fileArg = " /f:\"" + assembly + "\"";
 
             var rulesetArg = " /ruleset:-\"" + ConfigurationManager.AppSettings["AllRuleset"] + "\"";
-            rulesetArg += " /ruleset:+\"" + codeAnalysisConfiguration.RuleSet + "\"";
+            foreach (var rule in codeAnalysisConfiguration.RuleSet)
+            {
+                rulesetArg += " /ruleset:+\"" + rule + "\"";
+            }
 
-            var dictionaryArg = " /dictionary:\"" + codeAnalysisConfiguration.Dictionary + "\"";
+            var dictionaryArg = "";
+            foreach (var dictionary in codeAnalysisConfiguration.Dictionary)
+            {
+                dictionaryArg += " /dictionary:\"" + dictionary + "\"";
+            }
+
             var outputArg = " /o:\"" + output + "\"";
 
             var arguments = defaultArg + ruleArg + refArg + fileArg + rulesetArg + dictionaryArg + outputArg;
-
+            Console.WriteLine("Execute FXCOP: FxCopCmd.exe " + arguments);
             try
             {
                 Process process = new Process();
@@ -151,17 +154,13 @@ namespace Fanex.FxCop
         /// Detects the master code analysis.
         /// </summary>
         /// <param name="rootDirectory">The root directory.</param>
-        private static void DetectMasterCodeAnalysis(string rootDirectory)
+        private static void InitializeDefaultConfiguration(string rootDirectory)
         {
-            _solutionCodeAnalysisConfiguration = new CodeAnalysisConfiguration
+            _defaultCodeAnalysisConfiguration = new CodeAnalysisConfiguration
             {
-                RuleSet = ConfigurationManager.AppSettings["RecommendedRuleset"],
-                Dictionary = ConfigurationManager.AppSettings["RecommendedDictionary"]
+                RuleSet = new List<string> { ConfigurationManager.AppSettings["RecommendedRuleset"] },
+                Dictionary = new List<string> { ConfigurationManager.AppSettings["RecommendedDictionary"] }
             };
-
-            _solutionCodeAnalysisConfiguration = _codeAnalysisHelper.GetConfiguration(
-                rootDirectory,
-                _solutionCodeAnalysisConfiguration);
         }
     }
 }

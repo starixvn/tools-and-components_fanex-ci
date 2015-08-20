@@ -179,8 +179,6 @@ namespace Fanex.MSBuild
                 exitCode += numberOfWarnings;
             }
 
-            Program.EmailConsole.WriteLine("</TR>");
-
             var projectSummary = new ProjectSummary
             {
                 Name = projectName,

@@ -56,8 +56,9 @@ namespace Fanex.MSBuild
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.InnerException.Message);
-                Console.WriteLine(e.InnerException.StackTrace);
+                var exception = e.InnerException == null ? e : e.InnerException;
+                Console.WriteLine(exception.Message);
+                Console.WriteLine(exception.StackTrace);
             }
 
             outputStream.Close();

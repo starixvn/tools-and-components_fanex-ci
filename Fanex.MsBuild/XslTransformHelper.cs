@@ -10,6 +10,7 @@ namespace Fanex.MSBuild
     using System.Configuration;
     using System.IO;
     using Fanex.MSBuild.SummaryDisplay;
+    using System.Linq;
 
     /// <summary>
     /// TODO: Update summary.
@@ -107,7 +108,9 @@ namespace Fanex.MSBuild
         /// <returns>Return transformed FX cop report.</returns>
         public string GetFxCopReport(string path)
         {
-            string reportPath = path.Replace(".csproj", ConfigurationManager.AppSettings["FxCopOutPutFile"]);
+            string reportFileName = string.Format("{0}{1}", Path.GetFileNameWithoutExtension(path), ConfigurationManager.AppSettings["FxCopOutPutFile"]);
+            string projectDirectory = Path.GetDirectoryName(path);
+            string reportPath = Directory.EnumerateFiles(projectDirectory, reportFileName, SearchOption.AllDirectories).FirstOrDefault();
 
             if (!File.Exists(reportPath))
             {

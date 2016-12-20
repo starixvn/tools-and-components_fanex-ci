@@ -7,6 +7,7 @@
 namespace Fanex.MSBuild
 {
     using System;
+    using System.Configuration;
     using System.IO;
     using System.Text;
 
@@ -15,8 +16,7 @@ namespace Fanex.MSBuild
     /// </summary>
     public class EmailSummaryConsole
     {
-        // Fields
-        private const string FileName = "MSBUILD.SUMMARY.email";
+        // Fields        
         private string _filePath = string.Empty;
         private StringBuilder _content = new StringBuilder();
 
@@ -43,7 +43,7 @@ namespace Fanex.MSBuild
         /// </summary>
         public void Close()
         {
-            string file = this._filePath + "MSBUILD.SUMMARY.email";
+            string file = this._filePath + ConfigurationManager.AppSettings.Get("MsBuildSummaryEmail");
             try
             {
                 StreamWriter writer = File.CreateText(file);

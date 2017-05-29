@@ -429,12 +429,6 @@
                   </h4>
                 </xsl:otherwise>
               </xsl:choose>
-
-              <!--StyleCop repport for each project-->
-              <xsl:value-of disable-output-escaping="yes" select="xslHelper:GetStyleCopReport(@file)"/>
-
-              <!--FxCop repport for each project-->
-              <xsl:value-of disable-output-escaping="yes" select="xslHelper:GetFxCopReport(@file)"/>
               
               <xsl:value-of disable-output-escaping="yes" select="xslHelper:EmailConsoleSummary()"/>
               

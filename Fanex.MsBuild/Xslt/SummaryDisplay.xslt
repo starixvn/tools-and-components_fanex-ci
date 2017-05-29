@@ -5,9 +5,7 @@
         <tr>
           <td value="Project" fontattribute="bold"/>
           <td value="Error" fontattribute="bold"/>
-          <td value="Warning" fontattribute="bold"/>
-          <td value="StyleCop" fontattribute="bold"/>
-          <td value="FxCop" fontattribute="bold"/>
+          <td value="Warning" fontattribute="bold"/>          
         </tr>
         <xsl:apply-templates select="Project"/>
       </table>
@@ -42,29 +40,7 @@
         <xsl:if test="Warning = 0">
           <xsl:attribute name="fontcolor">blue</xsl:attribute>
         </xsl:if>
-      </xsl:element>
-      <xsl:element name="td">
-        <xsl:attribute name="value">
-          <xsl:value-of select="StyleCop"/>
-        </xsl:attribute>
-        <xsl:if test="StyleCop > 0">
-          <xsl:attribute name="fontcolor">red</xsl:attribute>
-        </xsl:if>
-        <xsl:if test="StyleCop = 0">
-          <xsl:attribute name="fontcolor">blue</xsl:attribute>
-        </xsl:if>
-      </xsl:element>
-      <xsl:element name="td">
-        <xsl:attribute name="value">
-          <xsl:value-of select="FxCop"/>
-        </xsl:attribute>
-        <xsl:if test="FxCop > 0">
-          <xsl:attribute name="fontcolor">red</xsl:attribute>
-        </xsl:if>
-        <xsl:if test="FxCop = 0">
-          <xsl:attribute name="fontcolor">blue</xsl:attribute>
-        </xsl:if>
-      </xsl:element>
+      </xsl:element>      
     </tr>
   </xsl:template>
 </xsl:stylesheet>

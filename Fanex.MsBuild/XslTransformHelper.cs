@@ -159,44 +159,24 @@ namespace Fanex.MSBuild
         {
             var message = "<TR><TD>" + projectName + "</TD>";
             message += "<TD>" + this.FormatColor(numberOfErrors, string.Empty) + "</TD>";
-            message += "<TD>" + this.FormatColor(numberOfWarnings, string.Empty) + "</TD>";
-            message += "<TD>" + this.FormatColor(numberOfStyleCopViolations, string.Empty) + "</TD>";
-            message += "<TD>" + this.FormatColor(numberOfFxCopViolations, string.Empty) + "</TD>";
+            message += "<TD>" + this.FormatColor(numberOfWarnings, string.Empty) + "</TD>";            
 
             Program.EmailConsole.WriteLine(message);
             Program.EmailConsole.WriteLine("</TR>");
 
             var exitCode = numberOfErrors;
-            if (Program.Options.StyleCopAsError != "false")
-            {
-                exitCode += numberOfStyleCopViolations;
-            }
-
-            if (Program.Options.FxCopAsError != "false")
-            {
-                exitCode += numberOfFxCopViolations;
-            }
-
-            if (Program.Options.WarningAsError != "false")
-            {
-                exitCode += numberOfWarnings;
-            }
 
             var projectSummary = new ProjectSummary
             {
                 Name = projectName,
                 Error = numberOfErrors,
-                Warning = numberOfWarnings,
-                FxCop = numberOfFxCopViolations,
-                StyleCop = numberOfStyleCopViolations,
+                Warning = numberOfWarnings,               
                 ErrorCount = exitCode
             };
             Program.SummaryDisplayConsole.AddProjectSummary(projectSummary);
 
             numberOfErrors = 0;
-            numberOfWarnings = 0;
-            numberOfStyleCopViolations = 0;
-            numberOfFxCopViolations = 0;
+            numberOfWarnings = 0;            
 
             return string.Empty;
         }

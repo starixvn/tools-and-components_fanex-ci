@@ -17,12 +17,11 @@ namespace Fanex.MSBuild
     /// </summary>
     public class JsHintResultHandler
     {
-        private string _jscriptHintFilePath = string.Empty;
+        private readonly string _jscriptHintFilePath;
 
         public JsHintResultHandler(string jscripHintFilePath)
         {
             _jscriptHintFilePath = jscripHintFilePath;
-            this.ReadResultFromJSHintReport();
         }
 
         /// <summary>

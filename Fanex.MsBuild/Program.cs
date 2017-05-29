@@ -115,11 +115,12 @@ namespace Fanex.MSBuild
                     // Remove root directory C:\Program Files\Jenkins\workspace\
                     output = Replace(output, Options.RootDirectory, string.Empty);
                     OutputDir = Options.RootDirectory + Options.Name + "\\cireport\\msbuildreport\\";
-                    
+
                     // Check JSHint Result
                     if (Program.Options.JsHintAsError == "true")
                     {
                         JsHintResultHandler jscriptHintHandler = new JsHintResultHandler(Program.OutputDir + "\\" + JsHintReportName);
+                        jscriptHintHandler.ReadResultFromJSHintReport();
                     }
 
                     // Latest report
